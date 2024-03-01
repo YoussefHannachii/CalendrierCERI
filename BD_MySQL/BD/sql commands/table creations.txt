@@ -1,0 +1,50 @@
+Users: 
+CREATE TABLE `users` (
+   `user_id` int NOT NULL AUTO_INCREMENT,
+   `nom` varchar(255) DEFAULT NULL,
+   `prenom` varchar(255) DEFAULT NULL,
+   `mot_de_passe` varchar(255) DEFAULT NULL,
+   `role_id` int DEFAULT NULL,
+   `edt_formation_id` int DEFAULT NULL,
+   `edt_personnel_id` int DEFAULT NULL,
+   `edt_prof_id` int DEFAULT NULL,
+   PRIMARY KEY (`user_id`),
+   KEY `role_id` (`role_id`),
+   KEY `edt_formation_id` (`edt_formation_id`),
+   KEY `edt_personnel_id` (`edt_personnel_id`),
+   KEY `edt_prof_id` (`edt_prof_id`),
+   CONSTRAINT `users_ibfk_1` FOREIGN KEY (`role_id`) REFERENCES `role` (`role_id`),
+   CONSTRAINT `users_ibfk_2` FOREIGN KEY (`edt_formation_id`) REFERENCES `edt` (`id`),
+   CONSTRAINT `users_ibfk_3` FOREIGN KEY (`edt_personnel_id`) REFERENCES `edt` (`id`),
+   CONSTRAINT `users_ibfk_4` FOREIGN KEY (`edt_prof_id`) REFERENCES `edt` (`id`)
+ ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
+
+Role:
+CREATE TABLE `role` (
+   `role_id` int NOT NULL AUTO_INCREMENT,
+   `nom` enum('Etudiant','Professeur') NOT NULL,
+   PRIMARY KEY (`role_id`)
+ ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
+
+Events:
+CREATE TABLE `events` (
+   `event_id` int NOT NULL AUTO_INCREMENT,
+   `dtstart` varchar(255) NOT NULL,
+   `dtend` varchar(255) NOT NULL,
+   `matiere` varchar(255) DEFAULT NULL,
+   `enseignant` varchar(255) DEFAULT NULL,
+   `td` varchar(255) DEFAULT NULL,
+   `salle` varchar(255) DEFAULT NULL,
+   `type` varchar(255) DEFAULT NULL,
+   `edt_id` int DEFAULT NULL,
+   PRIMARY KEY (`event_id`),
+   KEY `edt_id` (`edt_id`),
+   CONSTRAINT `events_ibfk_1` FOREIGN KEY (`edt_id`) REFERENCES `edt` (`id`)
+ ) ENGINE=InnoDB AUTO_INCREMENT=1376 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
+
+Edt:
+CREATE TABLE `edt` (
+   `id` int NOT NULL AUTO_INCREMENT,
+   `nom` varchar(255) NOT NULL,
+   PRIMARY KEY (`id`)
+ ) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
