@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox alignment="CENTER" spacing="10.0" xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.example.calendrierceri.MainPageController">
+    <padding>
+        <Insets top="50" bottom="50" right="50" left="50"/>
+    </padding>
+
+    <Label fx:id="welcomeLabel"/>
+</VBox>
