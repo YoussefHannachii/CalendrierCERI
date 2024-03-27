@@ -1,4 +1,4 @@
-package com.example.calendrierceri;
+package com.example.calendrierceri.controller;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;

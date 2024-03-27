@@ -1,5 +1,8 @@
-package com.example.calendrierceri;
+package com.example.calendrierceri.controller;
 
+import com.example.calendrierceri.HelloApplication;
+import com.example.calendrierceri.model.User;
+import com.example.calendrierceri.dao.UserDAO;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -44,7 +47,7 @@ public class LoginController {
                 if (user != null) {
                     System.out.println("Utilisateur trouvé dans la base de données.");
                     System.out.println("Rôle de l'utilisateur: " + user.getRole());
-                    showMainPage(user.getRole());
+                    showMainPage(user);
                 } else {
                     showError("Identifiants incorrects.");
                 }
@@ -57,14 +60,15 @@ public class LoginController {
         }
     }
 
-    private void showMainPage(String role) throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("main_page.fxml"));
-        Parent mainPage = loader.load();
-        MainPageController mainController = loader.getController();
-        mainController.setRole(role);
+    private void showMainPage(User user) throws IOException {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/calendrierceri/landingPageView.fxml"));
+        Parent landingPage = loader.load();
+        LandingPageController landingPageController = loader.getController();
 
-        Scene scene = new Scene(mainPage);
+        landingPageController.setCurrentUser(user);
+        Scene scene = new Scene(landingPage);
         Stage stage = (Stage) usernameField.getScene().getWindow();
+        stage.setMaximized(true);
         stage.setScene(scene);
         stage.show();
     }

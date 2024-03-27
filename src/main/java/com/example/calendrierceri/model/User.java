@@ -1,6 +1,8 @@
-package com.example.calendrierceri;
+package com.example.calendrierceri.model;
 
-public class User {
+import java.io.Serializable;
+
+public class User implements Serializable {
     public int getUserId() {
         return userId;
     }
@@ -41,10 +43,37 @@ public class User {
         this.role = role;
     }
 
+    public int getEdtFormationId() {
+        return edtFormationId;
+    }
+
+    public void setEdtFormationId(int edtFormationId) {
+        this.edtFormationId = edtFormationId;
+    }
+
+    public int getEdtPersonnelId() {
+        return edtPersonnelId;
+    }
+
+    public void setEdtPersonnelId(int edtPersonnelId) {
+        this.edtPersonnelId = edtPersonnelId;
+    }
+
+    public int getEdtProfId() {
+        return edtProfId;
+    }
+
+    public void setEdtProfId(int edtProfId) {
+        this.edtProfId = edtProfId;
+    }
+
     private int userId;
     private String nom;
     private String prenom;
     private String motDePasse;
     private String role;
+    private int edtFormationId;
+    private int edtPersonnelId;
+    private int edtProfId;
 
 }

@@ -1,11 +1,14 @@
-package com.example.calendrierceri;
+package com.example.calendrierceri.dao;
 
+import com.example.calendrierceri.model.User;
+
+import java.io.Serializable;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class UserDAO {
+public class UserDAO implements Serializable {
     private Connection connection;
 
     public UserDAO(Connection connection) {
@@ -25,6 +28,17 @@ public class UserDAO {
                     user.setPrenom(rs.getString("prenom"));
                     user.setMotDePasse(rs.getString("mot_de_passe"));
                     user.setRole(mapRoleName(rs.getInt("role_id")));
+                    user.setEdtPersonnelId(rs.getInt("edt_personnel_id"));
+
+                    int edtFormationId = rs.getInt("edt_formation_id");
+                    if (!rs.wasNull()) {
+                        user.setEdtFormationId(edtFormationId);
+                    }
+
+                    int edtProfId = rs.getInt("edt_prof_id");
+                    if (!rs.wasNull()) {
+                        user.setEdtProfId(edtProfId);
+                    }
                     return user;
                 }
             }

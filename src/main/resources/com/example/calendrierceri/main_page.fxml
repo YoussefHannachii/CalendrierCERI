@@ -4,7 +4,7 @@
 <?import javafx.scene.layout.VBox?>
 
 <VBox alignment="CENTER" spacing="10.0" xmlns:fx="http://javafx.com/fxml"
-      fx:controller="com.example.calendrierceri.MainPageController">
+      fx:controller="com.example.calendrierceri.controller.MainPageController">
     <padding>
         <Insets top="50" bottom="50" right="50" left="50"/>
     </padding>

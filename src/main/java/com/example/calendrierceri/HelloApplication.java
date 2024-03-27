@@ -33,6 +33,8 @@ public class HelloApplication extends Application {
         // Créer une nouvelle scène avec la vue chargée et les dimensions ajustées
         Scene scene = new Scene(root, reducedWidth, reducedHeight);
 
+        stage.setMaximized(true);
+
         // Définir la scène sur la fenêtre principale et l'afficher
         stage.setScene(scene);
         stage.setTitle("Connexion");
@@ -44,11 +46,12 @@ public class HelloApplication extends Application {
     }
 
     // Méthode pour établir une connexion à la base de données MySQL
+    // A changer connecte ta base (YH)
     public static Connection getConnection() throws SQLException {
         // Remplacez les valeurs par celles de votre base de données
-        String url = "jdbc:mysql://localhost:3306/edt";
+        String url = "jdbc:mysql://localhost:3306/edt_ceri";
         String username = "root";
-        String password = "Smail@10";
+        String password = "root";
 
         return DriverManager.getConnection(url, username, password);
     }
