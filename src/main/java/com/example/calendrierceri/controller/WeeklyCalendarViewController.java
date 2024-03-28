@@ -136,7 +136,7 @@ public class WeeklyCalendarViewController implements Initializable {
     }
 
 
-    private Event mapResultSetToEvent(ResultSet resultSet) throws SQLException {
+    static Event mapResultSetToEvent(ResultSet resultSet) throws SQLException {
         Event event = new Event();
         event.setEventId(resultSet.getInt("event_id"));
         event.setDtstart(resultSet.getString("dtstart"));
@@ -186,14 +186,14 @@ public class WeeklyCalendarViewController implements Initializable {
 
     public static Connection getDbConnection() throws SQLException {
         // Remplacez les valeurs par celles de votre base de données
-        String url = "jdbc:mysql://localhost:3306/edt_ceri";
+        String url = "jdbc:mysql://localhost:3306/edt";
         String username = "root";
-        String password = "root";
+        String password = "Smail@10";
 
         return DriverManager.getConnection(url, username, password);
     }
 
-    public int[] extractHourIndexesOnCalendarView(Event event){
+    public static int[] extractHourIndexesOnCalendarView(Event event){
 
         String dateStringDebut = event.getDtstart();
         String dateStringFin = event.getDtend();
@@ -238,7 +238,7 @@ public class WeeklyCalendarViewController implements Initializable {
         return indexDayOfTheWeek;
     }
 
-    private static int calculerIndexHoraire(LocalTime heure) {
+    static int calculerIndexHoraire(LocalTime heure) {
         // L'index de l'heure 6:00 est 1, 7:00 est 2, ..., 18:00 est 13
         return heure.getHour() - 5; // Parce que 6:00 correspond à l'index 1
     }
@@ -260,7 +260,7 @@ public class WeeklyCalendarViewController implements Initializable {
         label.setFont(Font.font("Arial", FontWeight.BOLD, 12));
         label.setTextFill(Color.BLACK);
         if(event.getType().equals("Evaluation")){
-            label.setStyle("-fx-background-color: #B0E0E6; -fx-border-color: red; -fx-padding: 5px;");
+            label.setStyle("-fx-background-color: red; -fx-border-color: red; -fx-padding: 5px;");
         }else{
             label.setStyle("-fx-background-color: #B0E0E6; -fx-border-color: #4682B4; -fx-padding: 5px;");
         }
