@@ -43,9 +43,9 @@
 <?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox prefHeight="623.0" prefWidth="849.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.calendrierceri.controller.LandingPageController">
+<VBox alignment="CENTER" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.calendrierceri.controller.LandingPageController">
    <children>
-      <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0">
+      <HBox alignment="CENTER" VBox.vgrow="NEVER">
          <children>
             <MenuButton mnemonicParsing="false" text="Type">
               <items>
@@ -55,19 +55,19 @@
             </MenuButton>
             <TextField alignment="CENTER" HBox.hgrow="NEVER" />
             <Button alignment="CENTER" mnemonicParsing="false" text="Search" HBox.hgrow="NEVER" />
-            <Region prefHeight="100.0" prefWidth="151.0">
+            <Region prefHeight="98.0" prefWidth="234.0">
                <HBox.margin>
                   <Insets />
                </HBox.margin>
             </Region>
             <ToggleButton alignment="CENTER_RIGHT" mnemonicParsing="false" text="Light mode" HBox.hgrow="NEVER">
                <HBox.margin>
-                  <Insets left="50.0" />
+                  <Insets left="200.0" />
                </HBox.margin>
             </ToggleButton>
          </children>
       </HBox>
-      <HBox prefHeight="525.0" prefWidth="850.0">
+      <HBox prefHeight="525.0" VBox.vgrow="NEVER">
          <children>
             <VBox alignment="TOP_CENTER" prefHeight="525.0" prefWidth="182.0">
                <children>
@@ -131,26 +131,29 @@
             </VBox>
             <VBox prefHeight="525.0" prefWidth="670.0">
                <children>
-                  <VBox fx:id="containerVBox" layoutX="10.0" layoutY="92.0" prefHeight="758.0" prefWidth="670.0">
+                  <VBox fx:id="containerVBox" layoutX="10.0" layoutY="92.0" prefHeight="758.0" prefWidth="1000.0" VBox.vgrow="NEVER">
                      <children>
                         <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0">
                            <children>
-                              <Label text="Label" />
+                              <Label fx:id="labelEdtInfo" text="Label" />
+                              <Region prefHeight="100.0" prefWidth="82.0" />
+                              <Button fx:id="previousDisplayButton" mnemonicParsing="false" text="Previous" />
                               <MenuButton fx:id="calendarViewType" mnemonicParsing="false" text="WeeklyView">
                                 <items>
                                   <MenuItem mnemonicParsing="false" text="Action 1" />
                                   <MenuItem mnemonicParsing="false" text="Action 2" />
                                 </items>
                                  <HBox.margin>
-                                    <Insets left="50.0" />
+                                    <Insets />
                                  </HBox.margin>
                               </MenuButton>
+                              <Button fx:id="nextDisplayButton" mnemonicParsing="false" text="Next" />
                            </children>
                            <VBox.margin>
                               <Insets />
                            </VBox.margin>
                         </HBox>
-                        <VBox fx:id="calendarViewVBox" prefHeight="426.0" prefWidth="670.0" />
+                        <VBox fx:id="calendarViewVBox" VBox.vgrow="NEVER" />
                      </children>
                   </VBox>
                </children>

@@ -2,13 +2,19 @@ package com.example.calendrierceri.controller;
 
 import com.example.calendrierceri.model.Event;
 import com.example.calendrierceri.model.User;
+import com.example.calendrierceri.util.NextPreviousService;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
+import javafx.scene.text.Text;
+import javafx.scene.text.TextFlow;
 
 import java.net.URL;
 import java.sql.*;
@@ -21,13 +27,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
-public class WeeklyCalendarViewController implements Initializable {
+public class WeeklyCalendarViewController implements Initializable, NextPreviousService {
 
     @FXML
     private GridPane weeklyCalendarView;
-
     private Connection connection;
-
     private User currentUser;
     private List<Event> currentWeekEvents = new ArrayList<>();
 
@@ -62,7 +66,9 @@ public class WeeklyCalendarViewController implements Initializable {
 
     public void addEventsToView(List<Event> events){
         for(Event event : events){
-            Label currentEventNode = createLabelFromEvent(event);
+            System.out.println("Event :"+event);
+
+            ScrollPane currentEventNode = createLabelFromEvent(event);
             int dayIndex = extractDayIndexOnCalendarView(event);
             //rend un tableau avec l'index de debut et de fin du event
             int[] eventDurationIndexes = extractHourIndexesOnCalendarView(event);
@@ -216,8 +222,6 @@ public class WeeklyCalendarViewController implements Initializable {
         return new int[] { indexDebut, indexFin };
     }
 
-
-
     public int extractDayIndexOnCalendarView(Event event){
         String dateString = event.getDtstart();
 
@@ -243,29 +247,101 @@ public class WeeklyCalendarViewController implements Initializable {
         return heure.getHour() - 5; // Parce que 6:00 correspond à l'index 1
     }
 
-    public static Label createLabelFromEvent(Event event) {
-        // Créer un nouveau label
-        Label label = new Label();
-
-        // Définir le texte du label à partir des détails de l'événement
-        String text = event.getMatiere() + "\n" +
+    public static ScrollPane createLabelFromEvent(Event event) {
+        Text text = new Text(event.getMatiere() + "\n" +
                 "Enseignant: " + event.getEnseignant() + "\n" +
                 "Salle: " + event.getSalle() + "\n" +
                 "Type: " + event.getType() + "\n" +
-                "Promotions: " + event.getTd();
+                "Promotions: " + event.getTd());
 
-        label.setText(text);
+        // Appliquer un style au Text
+        text.setFont(Font.font("Arial", FontWeight.BOLD, 12));
+        text.setFill(Color.BLACK);
+        StackPane textContainer = new StackPane();
+        textContainer.setStyle("-fx-background-color: #B0E0E6; " +
+                "-fx-padding: 5px;");
+        textContainer.getChildren().add(text);
 
-        // Appliquer un style au label
-        label.setFont(Font.font("Arial", FontWeight.BOLD, 12));
-        label.setTextFill(Color.BLACK);
-        if(event.getType().equals("Evaluation")){
-            label.setStyle("-fx-background-color: #B0E0E6; -fx-border-color: red; -fx-padding: 5px;");
-        }else{
-            label.setStyle("-fx-background-color: #B0E0E6; -fx-border-color: #4682B4; -fx-padding: 5px;");
+        // Créer un ScrollPane pour contenir le Text
+        ScrollPane scrollPane = new ScrollPane();
+        scrollPane.setContent(textContainer);
+
+        // Autoriser le défilement vertical si nécessaire
+        scrollPane.setFitToHeight(true);
+
+        // Appliquer un style au ScrollPane
+        if (event.getType().equals("Evaluation")) {
+            scrollPane.setStyle("-fx-background-color: #FF5B5B; " +
+                    "-fx-border-color: red; " +
+                    "-fx-padding: 5px;");
+        } else {
+            scrollPane.setStyle("-fx-background-color: #B0E0E6; " +
+                    "-fx-border-color: #4682B4; " +
+                    "-fx-padding: 5px;");
         }
 
-        return label;
+        return scrollPane;
     }
 
+    //Date en entrée c'est la date affichée sur le landing page
+    //donc il faut chercher la semaine qui d'aprés
+    @Override
+    public void onNext(String searchDate) {
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+        // Convertir la chaîne en LocalDate
+        LocalDate date = LocalDate.parse(searchDate, formatter);
+
+        // Ajouter une semaine à la date
+        LocalDate datePlusOneWeek = date.plusWeeks(1);
+
+        String datePlusOneWeekString = formatter.format(datePlusOneWeek);
+
+        if(currentUser.getRole().equals("Etudiant")){
+            mapWeekInfo(datePlusOneWeekString, currentUser.getEdtPersonnelId(), currentUser.getEdtFormationId());
+        }else {
+            mapWeekInfo(datePlusOneWeekString,currentUser.getEdtPersonnelId(), currentUser.getEdtProfId());
+        }
+        clearGridPane(weeklyCalendarView);
+        addEventsToView(currentWeekEvents);
+    }
+
+    @Override
+    public void onPrevious(String searchDate) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+        // Convertir la chaîne en LocalDate
+        LocalDate date = LocalDate.parse(searchDate, formatter);
+
+        // Ajouter une semaine à la date
+        LocalDate dateMinusOneWeek = date.minusWeeks(1);
+
+        String dateMinusOneWeekString = formatter.format(dateMinusOneWeek);
+
+        if(currentUser.getRole().equals("Etudiant")){
+            mapWeekInfo(dateMinusOneWeekString, currentUser.getEdtPersonnelId(), currentUser.getEdtFormationId());
+        }else {
+            mapWeekInfo(dateMinusOneWeekString,currentUser.getEdtPersonnelId(), currentUser.getEdtProfId());
+        }
+        clearGridPane(weeklyCalendarView);
+        addEventsToView(currentWeekEvents);
+    }
+
+    public static void clearGridPane(GridPane gridPane) {
+        // Créer une liste temporaire pour stocker les nœuds à supprimer
+        List<Node> nodesToRemove = new ArrayList<>();
+
+        // Parcourir les enfants du GridPane
+        for (Node node : gridPane.getChildren()) {
+            // Vérifier si le nœud est une instance de ScrollPane
+            if (node instanceof ScrollPane) {
+                // Ajouter le nœud à la liste des nœuds à supprimer
+                nodesToRemove.add(node);
+            }
+        }
+
+        // Supprimer les nœuds de la liste temporaire
+        gridPane.getChildren().removeAll(nodesToRemove);
+    }
 }

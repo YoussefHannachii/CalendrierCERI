@@ -9,6 +9,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -66,9 +67,12 @@ public class LoginController {
         LandingPageController landingPageController = loader.getController();
 
         landingPageController.setCurrentUser(user);
-        Scene scene = new Scene(landingPage);
+
         Stage stage = (Stage) usernameField.getScene().getWindow();
-        stage.setMaximized(true);
+
+
+        Scene scene = new Scene(landingPage);
+
         stage.setScene(scene);
         stage.show();
     }

@@ -23,15 +23,7 @@ public class HelloApplication extends Application {
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("login.fxml"));
         Parent root = fxmlLoader.load();
 
-        // Obtenir les dimensions de l'écran de la tablette
-        Rectangle2D screenSize = Screen.getPrimary().getVisualBounds();
-
-        // Réduire les dimensions de l'écran de la tablette
-        reducedWidth = screenSize.getWidth() * 0.8;
-        reducedHeight = screenSize.getHeight() * 0.8;
-
-        // Créer une nouvelle scène avec la vue chargée et les dimensions ajustées
-        Scene scene = new Scene(root, reducedWidth, reducedHeight);
+        Scene scene = new Scene(root);
 
         stage.setMaximized(true);
 
