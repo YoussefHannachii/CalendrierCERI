@@ -1,6 +1,6 @@
 package com.example.calendrierceri.util;
 
 public interface NextPreviousService {
-    public void onNext(String searchDate);
-    public void onPrevious(String searchDate);
+    public String onNext(String searchDate);
+    public String onPrevious(String searchDate);
 }

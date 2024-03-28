@@ -286,7 +286,7 @@ public class WeeklyCalendarViewController implements Initializable, NextPrevious
     //Date en entrée c'est la date affichée sur le landing page
     //donc il faut chercher la semaine qui d'aprés
     @Override
-    public void onNext(String searchDate) {
+    public String onNext(String searchDate) {
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
@@ -305,10 +305,11 @@ public class WeeklyCalendarViewController implements Initializable, NextPrevious
         }
         clearGridPane(weeklyCalendarView);
         addEventsToView(currentWeekEvents);
+        return datePlusOneWeekString;
     }
 
     @Override
-    public void onPrevious(String searchDate) {
+    public String onPrevious(String searchDate) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
         // Convertir la chaîne en LocalDate
@@ -326,6 +327,7 @@ public class WeeklyCalendarViewController implements Initializable, NextPrevious
         }
         clearGridPane(weeklyCalendarView);
         addEventsToView(currentWeekEvents);
+        return dateMinusOneWeekString;
     }
 
     public static void clearGridPane(GridPane gridPane) {

@@ -69,12 +69,7 @@ public class LandingPageController implements Initializable {
                 // Convertir la chaîne en LocalDate
                 LocalDate date = LocalDate.parse(currentDisplayedDate, formatter);
 
-                // Ajouter une semaine à la date
-                LocalDate datePlusOneWeek = date.plusWeeks(1);
-
-                currentDisplayedDate = formatter.format(datePlusOneWeek);
-
-                currentNextPreviousService.onNext(formatter.format(date));
+                currentDisplayedDate = currentNextPreviousService.onNext(formatter.format(date));
             });
 
             previousDisplayButton.setOnAction(event -> {
@@ -83,12 +78,9 @@ public class LandingPageController implements Initializable {
                 // Convertir la chaîne en LocalDate
                 LocalDate date = LocalDate.parse(currentDisplayedDate, formatter);
 
-                // Ajouter une semaine à la date
-                LocalDate dateMinusOneWeek = date.minusWeeks(1);
+                currentDisplayedDate = currentNextPreviousService.onPrevious(formatter.format(date));
 
-                currentDisplayedDate = formatter.format(dateMinusOneWeek);
-
-                currentNextPreviousService.onPrevious(formatter.format(date));
+                System.out.println("Current displayed date on the landing page controller : " + currentDisplayedDate);
             });
 
 
