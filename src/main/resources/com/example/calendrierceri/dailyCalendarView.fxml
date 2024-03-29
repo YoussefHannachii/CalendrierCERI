@@ -1,19 +1,54 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.control.ScrollPane?>
-
+<?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
-<BorderPane xmlns="http://javafx.com/javafx"
-            xmlns:fx="http://javafx.com/fxml"
-            fx:controller="com.example.calendrierceri.controller.DailyCalendarViewController">
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.geometry.Insets?>
 
-    <center>
-        <ScrollPane fitToWidth="true" fitToHeight="true">
-            <!-- This GridPane will hold the events for the day -->
-            <GridPane fx:id="dailyCalendarView" />
-        </ScrollPane>
-    </center>
-
-</BorderPane>
+<VBox fx:id="dailyViewVBox" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="615.0" prefWidth="827.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.calendrierceri.controller.DailyCalendarViewController">
+    <children>
+        <GridPane fx:id="dailyCalendarView" gridLinesVisible="true" prefHeight="615.0" prefWidth="827.0" VBox.vgrow="ALWAYS">
+            <padding>
+                <Insets top="10" right="10" bottom="10" left="10"/>
+            </padding>
+            <columnConstraints>
+                <!-- Column for showing events -->
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+            </columnConstraints>
+            <rowConstraints>
+                <!-- Creating rows for each hour from 6:00 to 18:00 -->
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+            </rowConstraints>
+            <children>
+                <!-- Labels for each hour slot. Adjust GridPane.rowIndex for correct placement -->
+                <Label text="6:00 => 7:00" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+                <Label text="7:00 => 8:00" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+                <Label text="8:00 => 9:00" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+                <Label text="9:00 => 10:00" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
+                <Label text="10:00 => 11:00" GridPane.rowIndex="4" GridPane.columnIndex="0"/>
+                <Label text="11:00 => 12:00" GridPane.rowIndex="5" GridPane.columnIndex="0"/>
+                <Label text="12:00 => 13:00" GridPane.rowIndex="6" GridPane.columnIndex="0"/>
+                <Label text="13:00 => 14:00" GridPane.rowIndex="7" GridPane.columnIndex="0"/>
+                <Label text="14:00 => 15:00" GridPane.rowIndex="8" GridPane.columnIndex="0"/>
+                <Label text="15:00 => 16:00" GridPane.rowIndex="9" GridPane.columnIndex="0"/>
+                <Label text="16:00 => 17:00" GridPane.rowIndex="10" GridPane.columnIndex="0"/>
+                <Label text="17:00 => 18:00" GridPane.rowIndex="11" GridPane.columnIndex="0"/>
+                <Label text="18:00 => 19:00" GridPane.rowIndex="11" GridPane.columnIndex="0"/>
+            </children>
+        </GridPane>
+    </children>
+</VBox>
