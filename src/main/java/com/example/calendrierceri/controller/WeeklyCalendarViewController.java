@@ -48,26 +48,23 @@ public class WeeklyCalendarViewController implements Initializable, NextPrevious
         }
     }
 
-    public void initializeWeeklyData(User user){
+    public void initializeWeeklyData(String searchData,User user){
         currentUser=user;
-        LocalDate today = LocalDate.now();
-
-        // Formater la date dans le format "yyyy-MM-dd"
-        DateTimeFormatter formater = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        String todayFormated = today.format(formater);
+//        LocalDate today = LocalDate.now();
+//
+//        // Formater la date dans le format "yyyy-MM-dd"
+//        DateTimeFormatter formater = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+//        String todayFormated = today.format(formater);
         if(currentUser.getRole().equals("Etudiant")){
-            mapWeekInfo(todayFormated, currentUser.getEdtPersonnelId(), currentUser.getEdtFormationId());
+            mapWeekInfo(searchData, currentUser.getEdtPersonnelId(), currentUser.getEdtFormationId());
         }else {
-            mapWeekInfo(todayFormated,currentUser.getEdtPersonnelId(), currentUser.getEdtProfId());
+            mapWeekInfo(searchData,currentUser.getEdtPersonnelId(), currentUser.getEdtProfId());
         }
         addEventsToView(currentWeekEvents);
     }
 
-
     public void addEventsToView(List<Event> events){
         for(Event event : events){
-            System.out.println("Event :"+event);
-
             ScrollPane currentEventNode = createLabelFromEvent(event);
             int dayIndex = extractDayIndexOnCalendarView(event);
             //rend un tableau avec l'index de debut et de fin du event
@@ -273,6 +270,10 @@ public class WeeklyCalendarViewController implements Initializable, NextPrevious
         if (event.getType().equals("Evaluation")) {
             scrollPane.setStyle("-fx-background-color: #FF5B5B; " +
                     "-fx-border-color: red; " +
+                    "-fx-padding: 5px;");
+        }else if(event.getType().equals("Perso")){
+            scrollPane.setStyle("-fx-background-color: #F4FF51; " +
+                    "-fx-border-color: black; " +
                     "-fx-padding: 5px;");
         } else {
             scrollPane.setStyle("-fx-background-color: #B0E0E6; " +
