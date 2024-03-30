@@ -25,6 +25,8 @@ public class DailyCalendarViewController implements Initializable {
     private User currentUser;
     private List<Event> currentDayEvents = new ArrayList<>();
 
+    private LocalDate currentDate;
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         try {
@@ -35,8 +37,9 @@ public class DailyCalendarViewController implements Initializable {
     }
 
     public void initializeDailyData(User user, LocalDate date) {
-        currentUser = user;
-        loadEventsForDay(date);
+        this.currentUser = user;
+        this.currentDate = date; // Initialisez currentDate ici
+        loadEventsForDay(currentDate);
         addEventsToView();
     }
 
@@ -71,5 +74,20 @@ public class DailyCalendarViewController implements Initializable {
 
             dailyCalendarView.add(eventLabel, 0, eventTimeIndexes[0], 1, eventTimeIndexes[1] - eventTimeIndexes[0]);
         }
+    }
+
+    // Ajoutez les méthodes pour le jour suivant et précédent
+    @FXML
+    public void goToNextDay() {
+        currentDate = currentDate.plusDays(1);
+        loadEventsForDay(currentDate);
+        addEventsToView();
+    }
+
+    @FXML
+    public void goToPreviousDay() {
+        currentDate = currentDate.minusDays(1);
+        loadEventsForDay(currentDate);
+        addEventsToView();
     }
 }

@@ -13,6 +13,7 @@ import javafx.scene.layout.VBox;
 
 import java.io.IOException;
 import java.net.URL;
+import java.time.LocalDate;
 import java.util.ResourceBundle;
 import javafx.scene.control.ToggleButton;
 
@@ -77,19 +78,25 @@ public class LandingPageController implements Initializable {
                 }
             });
 
-            dailyMenuItem.setOnAction(event -> {
-                try {
-                    Node dailyView = FXMLLoader.load(getClass().getResource("/com/example/calendrierceri/dailyCalendarView.fxml"));
-                    if (calendarViewVBox.getChildren().isEmpty()) {
-                        calendarViewVBox.getChildren().add(dailyView);
-                    } else {
-                        // Remplacer le contenu existant
-                        calendarViewVBox.getChildren().set(0, dailyView);
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
+        dailyMenuItem.setOnAction(event -> {
+            try {
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/calendrierceri/dailyCalendarView.fxml"));
+                Node dailyView = loader.load();
+                DailyCalendarViewController dailyCalendarViewController = loader.getController();
+                // Utilisez LocalDate.now() ou une autre date si nécessaire
+                dailyCalendarViewController.initializeDailyData(currentUser, LocalDate.now());
+
+                if (calendarViewVBox.getChildren().isEmpty()) {
+                    calendarViewVBox.getChildren().add(dailyView);
+                } else {
+                    // Remplacer le contenu existant
+                    calendarViewVBox.getChildren().set(0, dailyView);
                 }
-            });
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
+
 
     }
     private void applyLightMode() {
