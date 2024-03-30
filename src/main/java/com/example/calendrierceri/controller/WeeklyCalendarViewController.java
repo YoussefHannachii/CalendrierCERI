@@ -2,6 +2,7 @@ package com.example.calendrierceri.controller;
 
 import com.example.calendrierceri.model.Event;
 import com.example.calendrierceri.model.User;
+import com.example.calendrierceri.util.FiltreService;
 import com.example.calendrierceri.util.NextPreviousService;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -10,6 +11,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
@@ -27,7 +29,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
-public class WeeklyCalendarViewController implements Initializable, NextPreviousService {
+public class WeeklyCalendarViewController implements Initializable, NextPreviousService, FiltreService {
 
     @FXML
     private GridPane weeklyCalendarView;
@@ -49,12 +51,8 @@ public class WeeklyCalendarViewController implements Initializable, NextPrevious
     }
 
     public void initializeWeeklyData(String searchData,User user){
+        addDayInfoOnDayLabel(searchData);
         currentUser=user;
-//        LocalDate today = LocalDate.now();
-//
-//        // Formater la date dans le format "yyyy-MM-dd"
-//        DateTimeFormatter formater = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-//        String todayFormated = today.format(formater);
         if(currentUser.getRole().equals("Etudiant")){
             mapWeekInfo(searchData, currentUser.getEdtPersonnelId(), currentUser.getEdtFormationId());
         }else {
@@ -306,6 +304,7 @@ public class WeeklyCalendarViewController implements Initializable, NextPrevious
         }
         clearGridPane(weeklyCalendarView);
         addEventsToView(currentWeekEvents);
+        addDayInfoOnDayLabel(datePlusOneWeekString);
         return datePlusOneWeekString;
     }
 
@@ -328,6 +327,7 @@ public class WeeklyCalendarViewController implements Initializable, NextPrevious
         }
         clearGridPane(weeklyCalendarView);
         addEventsToView(currentWeekEvents);
+        addDayInfoOnDayLabel(dateMinusOneWeekString);
         return dateMinusOneWeekString;
     }
 
@@ -347,4 +347,110 @@ public class WeeklyCalendarViewController implements Initializable, NextPrevious
         // Supprimer les nœuds de la liste temporaire
         gridPane.getChildren().removeAll(nodesToRemove);
     }
+
+    public void addDayInfoOnDayLabel(String searchDate){
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDate date = LocalDate.parse(searchDate, formatter); // Conversion de la chaîne en LocalDate
+        // Créer un DateTimeFormatter pour formater les dates en "dd-MM"
+        DateTimeFormatter outputFormatter = DateTimeFormatter.ofPattern("dd/MM");
+
+        // Trouver le début de la semaine (lundi) à partir de la date donnée
+        LocalDate debutSemaine = date.with(DayOfWeek.MONDAY);
+
+        for (Node node : weeklyCalendarView.getChildren()) {
+            LocalDate debutSemaineUtil = debutSemaine;
+            if(node instanceof VBox){
+                Integer colIndex = GridPane.getColumnIndex(node);
+                    if(colIndex!=null && colIndex!=0)
+                    {
+                        VBox vbox = (VBox) node;
+                        Label label = new Label(debutSemaineUtil.plusDays(colIndex-1).format(outputFormatter));
+                        label.setStyle("-fx-font-weight:bold;");
+
+                        if (vbox.getChildren().size() > 1) { // Vérifier si un nœud existe déjà à la deuxième position
+                            vbox.getChildren().remove(1); // Supprimer le nœud existant à la deuxième position
+                        }
+                        vbox.getChildren().add(1, label); // Ajoute le label à la deuxième position dans le VBox
+                    }
+            }
+
+        }
+
+    }
+
+    private void filtrerEvenements(String searchDate, String filtreValue, int edtId, int personalEdtId, String condition) {
+        if (!currentWeekEvents.isEmpty())
+            currentWeekEvents.clear();
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDate date = LocalDate.parse(searchDate, formatter); // Conversion de la chaîne en LocalDate
+
+        // Trouver le début de la semaine (lundi) à partir de la date donnée
+        LocalDate debutSemaine = date.with(DayOfWeek.MONDAY);
+
+        // Trouver la fin de la semaine (dimanche) à partir de la date donnée
+        LocalDate finSemaine = date.with(DayOfWeek.SUNDAY);
+
+        // Formater les dates en chaînes de caractères
+        String debutSemaineString = debutSemaine.format(formatter);
+        String finSemaineString = finSemaine.format(formatter);
+
+        debutSemaineString = debutSemaineString.concat(" 00:00:00");
+        finSemaineString = finSemaineString.concat(" 23:59:59");
+
+        String requeteSql;
+        PreparedStatement statement;
+        if (personalEdtId == 0) {
+            requeteSql = "SELECT * FROM events WHERE dtstart BETWEEN ? AND ? AND edt_id = ? AND " + condition;
+        } else {
+            requeteSql = "SELECT * FROM events WHERE dtstart BETWEEN ? AND ? AND (edt_id = ? OR edt_id = ?) AND " + condition;
+        }
+
+        try {
+            statement = connection.prepareStatement(requeteSql);
+            statement.setString(1, debutSemaineString);
+            statement.setString(2, finSemaineString);
+            statement.setInt(3, edtId);
+            statement.setString(4, filtreValue);
+
+            // Si personalEdtId n'est pas égal à zéro, nous avons une quatrième condition
+            if (personalEdtId != 0) {
+                statement.setInt(4, personalEdtId);
+                statement.setString(5, filtreValue);
+            }
+
+            // Exécuter la requête ici
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        // Exécution de la requête
+        try (ResultSet resultSet = statement.executeQuery()) {
+            // Parcours des résultats
+            while (resultSet.next()) {
+                Event event = mapResultSetToEvent(resultSet);
+                currentWeekEvents.add(event);
+            }
+        } catch (SQLException ex) {
+            throw new RuntimeException(ex);
+        }
+        clearGridPane(weeklyCalendarView);
+        addEventsToView(currentWeekEvents);
+    }
+
+    @Override
+    public void onSalleFiltre(String searchDate, String filtreValue, int edtId, int personalEdtId) {
+        filtrerEvenements(searchDate, filtreValue, edtId, personalEdtId, "salle = ?");
+    }
+
+    @Override
+    public void onTypeFiltre(String searchDate, String filtreValue, int edtId, int personalEdtId) {
+        filtrerEvenements(searchDate, filtreValue, edtId, personalEdtId, "type = ?");
+    }
+
+    @Override
+    public void onMatiereFiltre(String searchDate, String filtreValue, int edtId, int personalEdtId) {
+        filtrerEvenements(searchDate, filtreValue, edtId, personalEdtId, "matiere = ?");
+    }
+
 }

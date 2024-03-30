@@ -76,7 +76,7 @@
                         <Insets bottom="40.0" />
                      </VBox.margin>
                   </Label>
-                  <MenuButton mnemonicParsing="false" text="MenuButton">
+                  <MenuButton fx:id="filtreSalle" mnemonicParsing="false" text="Filtre Class">
                     <items>
                       <MenuItem mnemonicParsing="false" text="Action 1" />
                       <MenuItem mnemonicParsing="false" text="Action 2" />
@@ -85,7 +85,7 @@
                         <Insets bottom="20.0" />
                      </VBox.margin>
                   </MenuButton>
-                  <MenuButton mnemonicParsing="false" text="MenuButton">
+                  <MenuButton fx:id="filtreType" mnemonicParsing="false" text="Filtre Type">
                     <items>
                       <MenuItem mnemonicParsing="false" text="Action 1" />
                       <MenuItem mnemonicParsing="false" text="Action 2" />
@@ -94,22 +94,13 @@
                         <Insets bottom="20.0" />
                      </VBox.margin>
                   </MenuButton>
-                  <MenuButton mnemonicParsing="false" text="MenuButton">
+                  <MenuButton fx:id="filtreMatiere" mnemonicParsing="false" text="Filtre Subject">
                     <items>
                       <MenuItem mnemonicParsing="false" text="Action 1" />
                       <MenuItem mnemonicParsing="false" text="Action 2" />
                     </items>
                      <VBox.margin>
                         <Insets bottom="20.0" />
-                     </VBox.margin>
-                  </MenuButton>
-                  <MenuButton mnemonicParsing="false" text="MenuButton">
-                    <items>
-                      <MenuItem mnemonicParsing="false" text="Action 1" />
-                      <MenuItem mnemonicParsing="false" text="Action 2" />
-                    </items>
-                     <VBox.margin>
-                        <Insets />
                      </VBox.margin>
                   </MenuButton>
                   <Region prefHeight="114.0" prefWidth="182.0" />

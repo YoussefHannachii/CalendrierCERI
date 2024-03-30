@@ -1,6 +1,8 @@
 package com.example.calendrierceri.controller;
 
 import com.example.calendrierceri.model.User;
+import com.example.calendrierceri.util.FilterPopulator;
+import com.example.calendrierceri.util.FiltreService;
 import com.example.calendrierceri.util.NextPreviousService;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -19,13 +21,16 @@ import javafx.scene.layout.VBox;
 
 import java.io.IOException;
 import java.net.URL;
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
-public class LandingPageController implements Initializable {
+public class LandingPageController  implements Initializable  {
     @FXML
     private VBox calendarViewVBox;
 
@@ -44,15 +49,33 @@ public class LandingPageController implements Initializable {
     @FXML
     private Label monthDisplayed;
 
+    @FXML
+    private MenuButton filtreMatiere;
+
+    @FXML
+    private MenuButton filtreType;
+
+    @FXML
+    private MenuButton filtreSalle;
+
     private User currentUser;
 
     private String currentDisplayedDate;
 
     private NextPreviousService currentNextPreviousService;
 
+    private FiltreService currentFiltreService;
 
-    public void setCurrentUser(User user){
+    private FilterPopulator filterPopulator;
+
+
+    public void setCurrentUser(User user) throws SQLException {
         this.currentUser=user;
+        if(currentUser.getRole().equals("Etudiant")){
+            populateMenuButtons(currentUser.getEdtFormationId(),currentUser.getEdtPersonnelId());
+        }else {
+            populateMenuButtons(currentUser.getEdtProfId(),currentUser.getEdtPersonnelId());
+        }
         labelEdtInfo.setText(currentUser.getPrenom() + " " + currentUser.getNom() +" calendar");
         labelEdtInfo.setStyle("-fx-font-family: Arial; -fx-font-weight: bold; -fx-font-size: 12px");
     }
@@ -76,7 +99,8 @@ public class LandingPageController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle rb) {
 
-            calendarViewType.getItems().clear();
+
+        calendarViewType.getItems().clear();
 
             MenuItem weeklyMenuItem = new MenuItem("Weekly");
             MenuItem dailyMenuItem = new MenuItem("Daily");
@@ -132,6 +156,7 @@ public class LandingPageController implements Initializable {
                         calendarViewVBox.getChildren().set(0, weeklyView);
                     }
                     currentNextPreviousService = weeklyCalendarViewController;
+                    currentFiltreService = weeklyCalendarViewController;
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -165,42 +190,69 @@ public class LandingPageController implements Initializable {
                     calendarViewVBox.getChildren().set(0, monthlyView);
                 }
                 currentNextPreviousService = monthlyCalendarViewController;
+                currentFiltreService = monthlyCalendarViewController;
             } catch (IOException e) {
                 e.printStackTrace();
             }
         });
     }
 
-    public EventHandler<ActionEvent> nextDisplay() {
+    //Fix pour la recherche aprés il faut penser a mettre type de recherche pour faire les recherche suivants l'edt diplayed
+    public void populateMenuButtons(int edtId,int personnalEdtId) throws SQLException {
+        filterPopulator = new FilterPopulator();
 
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        filtreMatiere.getItems().clear();
+        filtreType.getItems().clear();
+        filtreSalle.getItems().clear();
 
-        // Convertir la chaîne en LocalDate
-        LocalDate date = LocalDate.parse(currentDisplayedDate, formatter);
+        List<String> matieres;
+        List<String> types;
+        List<String> salles;
 
-        // Ajouter une semaine à la date
-        LocalDate datePlusOneWeek = date.plusWeeks(1);
 
-        currentDisplayedDate = formatter.format(datePlusOneWeek);
+        matieres = filterPopulator.getMatiereList(edtId,personnalEdtId);
+        salles = filterPopulator.getSalleList(edtId,personnalEdtId);
+        types = filterPopulator.getTypeList(edtId,personnalEdtId);
 
-        return event -> {
-            currentNextPreviousService.onNext(formatter.format(date));
-        };
+        for(String matiere : matieres){
+            MenuItem matiereItem = new MenuItem(matiere);
+            matiereItem.setOnAction(event ->{
+                if(currentUser.getRole().equals("Etudiant")) {
+                    currentFiltreService.onMatiereFiltre(currentDisplayedDate, matiere, currentUser.getEdtFormationId(), currentUser.getEdtPersonnelId());
+                }
+                else {
+                    currentFiltreService.onMatiereFiltre(currentDisplayedDate, matiere, currentUser.getEdtProfId(), currentUser.getEdtPersonnelId());
+                }
+            });
+            filtreMatiere.getItems().add(matiereItem);
+        }
+
+        for(String salle : salles){
+            MenuItem salleItem = new MenuItem(salle);
+            salleItem.setOnAction(event ->{
+                if(currentUser.getRole().equals("Etudiant")) {
+                    currentFiltreService.onSalleFiltre(currentDisplayedDate, salle, currentUser.getEdtFormationId(), currentUser.getEdtPersonnelId());
+                }
+                else {
+                    currentFiltreService.onSalleFiltre(currentDisplayedDate, salle, currentUser.getEdtProfId(), currentUser.getEdtPersonnelId());
+                }
+            });
+            filtreSalle.getItems().add(salleItem);
+        }
+
+        for(String type : types){
+            MenuItem typeItem = new MenuItem(type);
+            typeItem.setOnAction(event ->{
+                if(currentUser.getRole().equals("Etudiant")) {
+                    currentFiltreService.onTypeFiltre(currentDisplayedDate, type, currentUser.getEdtFormationId(), currentUser.getEdtPersonnelId());
+                }
+                else {
+                    currentFiltreService.onMatiereFiltre(currentDisplayedDate, type, currentUser.getEdtProfId(), currentUser.getEdtPersonnelId());
+                }
+            });
+            filtreType.getItems().add(typeItem);
+        }
+
     }
 
-    public EventHandler<ActionEvent> previousDisplay() {
-
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-
-        // Convertir la chaîne en LocalDate
-        LocalDate date = LocalDate.parse(currentDisplayedDate, formatter);
-
-        // Ajouter une semaine à la date
-        LocalDate dateMinusOneWeek = date.minusWeeks(1);
-
-        currentDisplayedDate = formatter.format(dateMinusOneWeek);
-        return event -> {
-            currentNextPreviousService.onPrevious(formatter.format(date));
-        };
-    }
 }

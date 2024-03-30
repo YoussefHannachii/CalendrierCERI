@@ -2,6 +2,7 @@ package com.example.calendrierceri.controller;
 
 import com.example.calendrierceri.model.Event;
 import com.example.calendrierceri.model.User;
+import com.example.calendrierceri.util.FiltreService;
 import com.example.calendrierceri.util.NextPreviousService;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -26,7 +27,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
-public class MonthlyCalendarViewController implements Initializable, NextPreviousService {
+public class MonthlyCalendarViewController implements Initializable, NextPreviousService, FiltreService {
 
     @FXML
     private GridPane monthlyCalendarView;
@@ -253,5 +254,20 @@ public class MonthlyCalendarViewController implements Initializable, NextPreviou
         addMonthDaysToView(dateMinusOneMonthString);
 
         return dateMinusOneMonthString;
+    }
+
+    @Override
+    public void onSalleFiltre(String searchDate, String filtreValue, int edtId, int personalEdtId) {
+
+    }
+
+    @Override
+    public void onTypeFiltre(String searchDate, String filtreValue, int edtId, int personalEdtId) {
+
+    }
+
+    @Override
+    public void onMatiereFiltre(String searchDate, String filtreValue, int edtId, int personalEdtId) {
+
     }
 }
