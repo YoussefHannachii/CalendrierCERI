@@ -188,6 +188,7 @@ public class LandingPageController  implements Initializable  {
                     // Remplacer le contenu existant
                     calendarViewVBox.getChildren().set(0, dailyView);
                 }
+                currentFiltreService = dailyCalendarViewController;
             } catch (IOException e) {
                 e.printStackTrace();
             }

@@ -2,6 +2,7 @@ package com.example.calendrierceri.controller;
 
 import com.example.calendrierceri.model.Event;
 import com.example.calendrierceri.model.User;
+import com.example.calendrierceri.util.FiltreService; // Assurez-vous que cette importation est correcte
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
@@ -13,39 +14,31 @@ import javafx.scene.text.FontWeight;
 import java.net.URL;
 import java.sql.*;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
-import java.util.ResourceBundle;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
-
-import com.example.calendrierceri.util.FiltreService;
-
-import static com.example.calendrierceri.controller.WeeklyCalendarViewController.extractHourIndexesOnCalendarView;
-import static com.example.calendrierceri.controller.WeeklyCalendarViewController.mapResultSetToEvent;
+import java.util.ResourceBundle;
 
 public class DailyCalendarViewController implements Initializable, FiltreService {
 
     @FXML
     private GridPane dailyCalendarView;
-
     private Connection connection;
     private User currentUser;
     private List<Event> currentDayEvents = new ArrayList<>();
-
     private LocalDate currentDate;
     @FXML
     private Label currentDateLabel;
 
+    // Attributs pour le filtrage
     private String currentFiltreCondition = "";
     private String currentFiltreValue = "";
-
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         try {
-            connection = WeeklyCalendarViewController.getDbConnection();
+            connection = WeeklyCalendarViewController.getDbConnection(); // Assurez-vous que cette méthode est accessible
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -59,7 +52,6 @@ public class DailyCalendarViewController implements Initializable, FiltreService
         addEventsToView();
     }
 
-    // Ajoutez cette méthode pour mettre à jour le label de la date
     private void updateDateLabel() {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("EEEE, MMMM d, yyyy", Locale.FRANCE);
         String formattedDate = currentDate.format(formatter);
@@ -69,58 +61,37 @@ public class DailyCalendarViewController implements Initializable, FiltreService
     private void loadEventsForDay(LocalDate date) {
         currentDayEvents.clear();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        String dateString = date.format(formatter) + "%";
+        String dateString = date.format(formatter);
 
-        String sqlQuery = "SELECT * FROM events WHERE dtstart LIKE ? AND (edt_id = ? OR edt_id = ?)";
-        if (!this.currentFiltreCondition.isEmpty() && !this.currentFiltreValue.isEmpty()) {
-            sqlQuery += " AND " + this.currentFiltreCondition + " = ?";
-        }
+        String sqlQuery = "SELECT * FROM events WHERE dtstart LIKE ? AND (edt_id = ? OR edt_id = ?)" + currentFiltreCondition;
 
         try (PreparedStatement statement = connection.prepareStatement(sqlQuery)) {
-            statement.setString(1, dateString);
+            statement.setString(1, dateString + "%");
             statement.setInt(2, currentUser.getEdtPersonnelId());
-            int edtId = currentUser.getEdtFormationId() != 0 ? currentUser.getEdtFormationId() : currentUser.getEdtProfId();
-            statement.setInt(3, edtId);
-            if (!this.currentFiltreCondition.isEmpty() && !this.currentFiltreValue.isEmpty()) {
-                statement.setString(4, this.currentFiltreValue);
+            statement.setInt(3, currentUser.getEdtFormationId());
+            if (!currentFiltreCondition.isEmpty()) {
+                statement.setString(4, currentFiltreValue);
             }
 
-            ResultSet resultSet = statement.executeQuery();
-            while (resultSet.next()) {
-                Event event = mapResultSetToEvent(resultSet);
-                currentDayEvents.add(event);
+            try (ResultSet resultSet = statement.executeQuery()) {
+                while (resultSet.next()) {
+                    Event event = WeeklyCalendarViewController.mapResultSetToEvent(resultSet); // Assurez-vous que cette méthode est accessible
+                    currentDayEvents.add(event);
+                }
             }
         } catch (SQLException e) {
-            e.printStackTrace();
-            // Gérer l'exception correctement
+            throw new RuntimeException(e);
         }
-        addEventsToView();
     }
-
 
     private void addEventsToView() {
         dailyCalendarView.getChildren().clear();
         for (Event event : currentDayEvents) {
             Label eventLabel = createLabelFromEvent(event);
-            int[] eventTimeIndexes = extractHourIndexesOnCalendarView(event);
+            int[] eventTimeIndexes = WeeklyCalendarViewController.extractHourIndexesOnCalendarView(event); // Assurez-vous que cette méthode est accessible
 
             dailyCalendarView.add(eventLabel, 0, eventTimeIndexes[0], 1, eventTimeIndexes[1] - eventTimeIndexes[0]);
         }
-    }
-
-    // Ajoutez les méthodes pour le jour suivant et précédent
-    @FXML
-    public void goToNextDay() {
-        currentDate = currentDate.plusDays(1);
-        loadEventsForDay(currentDate);
-        addEventsToView();
-    }
-
-    @FXML
-    public void goToPreviousDay() {
-        currentDate = currentDate.minusDays(1);
-        loadEventsForDay(currentDate);
-        addEventsToView();
     }
 
     private Label createLabelFromEvent(Event event) {
@@ -136,7 +107,6 @@ public class DailyCalendarViewController implements Initializable, FiltreService
         label.setTextFill(Color.BLACK);
         label.setWrapText(true);
         label.setMaxWidth(Double.MAX_VALUE);
-        // Appliquer un style spécifique pour les exams
         if ("Evaluation".equals(event.getType())) {
             label.setStyle("-fx-background-color: red; -fx-border-color: red; -fx-padding: 5px;");
         } else {
@@ -145,25 +115,42 @@ public class DailyCalendarViewController implements Initializable, FiltreService
         return label;
     }
 
-
     @Override
     public void onSalleFiltre(String searchDate, String filtreValue, int edtId, int personalEdtId) {
-        this.currentFiltreCondition = "salle";
+        this.currentFiltreCondition = " AND salle = ?";
         this.currentFiltreValue = filtreValue;
-        loadEventsForDay(this.currentDate);
+        loadEventsForDay(currentDate);
+        addEventsToView();
     }
 
     @Override
     public void onTypeFiltre(String searchDate, String filtreValue, int edtId, int personalEdtId) {
-        this.currentFiltreCondition = "type";
+        this.currentFiltreCondition = " AND type = ?";
         this.currentFiltreValue = filtreValue;
-        loadEventsForDay(this.currentDate);
+        loadEventsForDay(currentDate);
+        addEventsToView();
     }
 
     @Override
     public void onMatiereFiltre(String searchDate, String filtreValue, int edtId, int personalEdtId) {
-        this.currentFiltreCondition = "matiere";
+        this.currentFiltreCondition = " AND matiere = ?";
         this.currentFiltreValue = filtreValue;
-        loadEventsForDay(this.currentDate);
+        loadEventsForDay(currentDate);
+        addEventsToView();
+    }
+
+    // Ajoutez les méthodes pour le jour suivant et précédent
+    @FXML
+    public void goToNextDay() {
+        currentDate = currentDate.plusDays(1);
+        loadEventsForDay(currentDate);
+        addEventsToView();
+    }
+
+    @FXML
+    public void goToPreviousDay() {
+        currentDate = currentDate.minusDays(1);
+        loadEventsForDay(currentDate);
+        addEventsToView();
     }
 }
