@@ -36,6 +36,11 @@ public class WeeklyCalendarViewController implements Initializable, NextPrevious
     private Connection connection;
     private User currentUser;
     private List<Event> currentWeekEvents = new ArrayList<>();
+    private String currentSearchDate;
+    private String currentFiltreValue;
+    private int currentPersonalEdtId;
+    private int currentEdtId;
+    private String currentFiltreCondition;
 
     public void setCurrentUser(User user){
         this.currentUser=user;
@@ -282,6 +287,14 @@ public class WeeklyCalendarViewController implements Initializable, NextPrevious
         return scrollPane;
     }
 
+    public void updateCurrentData(String searchDate,String filreValue,int edtId,int personalEdtId, String filtreCondition){
+        currentSearchDate=searchDate;
+        currentFiltreValue=filreValue;
+        currentEdtId=edtId;
+        currentPersonalEdtId=personalEdtId;
+        currentFiltreCondition=filtreCondition;
+    }
+
     //Date en entrée c'est la date affichée sur le landing page
     //donc il faut chercher la semaine qui d'aprés
     @Override
@@ -296,6 +309,12 @@ public class WeeklyCalendarViewController implements Initializable, NextPrevious
         LocalDate datePlusOneWeek = date.plusWeeks(1);
 
         String datePlusOneWeekString = formatter.format(datePlusOneWeek);
+
+        if(!currentFiltreCondition.isEmpty()){
+            filtrerEvenements(datePlusOneWeekString,currentFiltreValue,currentEdtId,currentPersonalEdtId,currentFiltreCondition);
+            addDayInfoOnDayLabel(datePlusOneWeekString);
+            return datePlusOneWeekString;
+        }
 
         if(currentUser.getRole().equals("Etudiant")){
             mapWeekInfo(datePlusOneWeekString, currentUser.getEdtPersonnelId(), currentUser.getEdtFormationId());
@@ -319,6 +338,12 @@ public class WeeklyCalendarViewController implements Initializable, NextPrevious
         LocalDate dateMinusOneWeek = date.minusWeeks(1);
 
         String dateMinusOneWeekString = formatter.format(dateMinusOneWeek);
+
+        if(!currentFiltreCondition.isEmpty()){
+            filtrerEvenements(dateMinusOneWeekString,currentFiltreValue,currentEdtId,currentPersonalEdtId,currentFiltreCondition);
+            addDayInfoOnDayLabel(dateMinusOneWeekString);
+            return dateMinusOneWeekString;
+        }
 
         if(currentUser.getRole().equals("Etudiant")){
             mapWeekInfo(dateMinusOneWeekString, currentUser.getEdtPersonnelId(), currentUser.getEdtFormationId());
@@ -381,6 +406,8 @@ public class WeeklyCalendarViewController implements Initializable, NextPrevious
     private void filtrerEvenements(String searchDate, String filtreValue, int edtId, int personalEdtId, String condition) {
         if (!currentWeekEvents.isEmpty())
             currentWeekEvents.clear();
+
+        updateCurrentData(searchDate,filtreValue,edtId,personalEdtId,condition);
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         LocalDate date = LocalDate.parse(searchDate, formatter); // Conversion de la chaîne en LocalDate

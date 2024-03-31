@@ -35,6 +35,15 @@ public class MonthlyCalendarViewController implements Initializable, NextPreviou
     private Connection connection;
     private User currentUser;
 
+    private String currentSearchDate;
+
+    private String currentFiltreValue;
+
+    private String currentFiltreCondition;
+
+    private int currentEdtId;
+
+    private int currentPersonalEdtId;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -48,106 +57,88 @@ public class MonthlyCalendarViewController implements Initializable, NextPreviou
 
     public void initializeMonthlyData(String searchDate,User user){
         currentUser = user;
-        addMonthDaysToView(searchDate);
-//        if(currentUser.getRole().equals("Etudiant")){
-//            mapWeekInfo(searchDate, currentUser.getEdtPersonnelId(), currentUser.getEdtFormationId());
-//        }else {
-//            mapWeekInfo(searchDate,currentUser.getEdtPersonnelId(), currentUser.getEdtProfId());
-//        }
-//        for(Event event : currentMonthEvents){
-//            System.out.println("Event from month List : " + event);
-//        }
-    }
 
-
-    public void addEventsToView(String searchDate){
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        LocalDate date = LocalDate.parse(searchDate, formatter);
-
-        Month monthLength = date.getMonth();
-    }
-
-    public int countMonthDayEvent(String searchDate,int edtId,int edtExtraId){
-
-        String searchDateDouble = searchDate;
-
-        String debutJourString = searchDate.concat(" 00:00:00");
-        String finJourString = searchDateDouble.concat(" 23:59:59");
-
-        String requeteSql;
-        PreparedStatement statement;
-        if (edtExtraId == 0) {
-            requeteSql = "SELECT count(*) FROM events WHERE dtstart BETWEEN ? AND ? AND edt_id = ?";
-        } else {
-            requeteSql = "SELECT count(*) FROM events WHERE dtstart BETWEEN ? AND ? AND (edt_id = ? OR edt_id = ?)";
+        if(currentUser.getRole().equals("Etudiant")){
+            currentEdtId = currentUser.getEdtFormationId();
+            currentPersonalEdtId=currentUser.getEdtPersonnelId();
+        }else {
+            currentEdtId = currentUser.getEdtProfId();
+            currentPersonalEdtId=currentUser.getEdtPersonnelId();
         }
+        addMonthDaysToView(searchDate,"", currentEdtId, currentPersonalEdtId,"");
+    }
 
+    public String formatDateTimeString(LocalDate date) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        String dateString = formatter.format(date);
+        return dateString + " 00:00:00";
+    }
+
+    public String buildEventCountQuery(boolean hasExtraId, String condition) {
+        if (hasExtraId) {
+            return "SELECT count(*) FROM events WHERE dtstart BETWEEN ? AND ? AND (edt_id = ? OR edt_id = ?)" + condition;
+        } else {
+            return "SELECT count(*) FROM events WHERE dtstart BETWEEN ? AND ? AND edt_id = ?" + condition;
+        }
+    }
+
+    public int countMonthDayEvent(String searchDate,String filtreValue, int edtId, int edtExtraId, String condition) {
+        String debutJourString = formatDateTimeString(LocalDate.parse(searchDate));
+        String finJourString = debutJourString.replace("00:00:00", "23:59:59");
+
+        String requeteSql = buildEventCountQuery(edtExtraId != 0, condition);
         try {
-            statement = connection.prepareStatement(requeteSql);
+            PreparedStatement statement = connection.prepareStatement(requeteSql);
             statement.setString(1, debutJourString);
             statement.setString(2, finJourString);
             statement.setInt(3, edtId);
-
-            // Si edtExtraId n'est pas égal à zéro, nous avons une quatrième condition
             if (edtExtraId != 0) {
-                statement.setInt(4, edtExtraId);
+                if(condition.isEmpty()||condition==null){
+                    statement.setInt(4, edtExtraId);
+                }else {
+                    statement.setInt(4, edtExtraId);
+                    statement.setString(5, filtreValue);
+                }
+            }else if (!condition.isEmpty()|| condition!=null) {
+                statement.setString(4, filtreValue);
             }
-
-            // Exécuter la requête ici
+            // Si nécessaire, ajoutez le paramètre condition ici
+            try (ResultSet resultSet = statement.executeQuery()) {
+                if (resultSet.next()) {
+                    return resultSet.getInt(1);
+                }
+            }
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Erreur lors de l'exécution de la requête", e);
         }
-
-        try (ResultSet resultSet = statement.executeQuery()) {
-            if (resultSet.next()) {
-                return resultSet.getInt(1);
-            }
-        } catch (SQLException e) {
-        throw new RuntimeException("Erreur lors de l'exécution de la requête", e);
+        return 0;
     }
-    return 0;
-}
 
-    public void addMonthDaysToView(String searchDate){
+    public void addMonthDaysToView(String searchDate, String filtreValue, int edtId, int personalEdtId, String condition) {
+        clearMonthlyView();
+        updateCurrentData(searchDate,filtreValue,edtId,personalEdtId,condition);
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         LocalDate date = LocalDate.parse(searchDate, formatter);
-
         LocalDate premierJourMois = date.withDayOfMonth(1);
         DayOfWeek premierJourSemaine = premierJourMois.getDayOfWeek();
         int numeroJour = 1;
-
         int ligne = 1;
-        int colonne = premierJourSemaine.getValue() % 7 - 1 ;
-        if(colonne == -1){
+        int colonne = premierJourSemaine.getValue() % 7 - 1;
+        if (colonne == -1) {
             colonne = 6;
         }
 
         while (numeroJour <= date.lengthOfMonth()) {
-
             LocalDate currentDay = date.withDayOfMonth(numeroJour);
-            String currentDayString = formatter.format(currentDay);
+            int nbrOfEventsOnCurrentDate = countMonthDayEvent(currentDay.toString(),filtreValue, edtId, personalEdtId, condition);
 
-            int nbrOfEventsOnCurrentDate ;
-
-            if(currentUser.getRole().equals("Etudiant")){
-                nbrOfEventsOnCurrentDate = countMonthDayEvent(currentDayString, currentUser.getEdtPersonnelId(), currentUser.getEdtFormationId());
-            }else {
-                nbrOfEventsOnCurrentDate = countMonthDayEvent(currentDayString,currentUser.getEdtPersonnelId(), currentUser.getEdtProfId());
-            }
             StackPane stackPane = new StackPane();
-//            stackPane.setAlignment(Pos.TOP_RIGHT);
-//            stackPane.getChildren().add(new Label(String.valueOf(numeroJour)));
-//
-//            monthlyCalendarView.add(stackPane, colonne, ligne);
-
-            // Ajoutez le label existant en haut à droite
             Label labelHautDroite = new Label(String.valueOf(numeroJour));
             labelHautDroite.setStyle("-fx-font-weight: bold; -fx-padding: 5px");
             stackPane.getChildren().add(labelHautDroite);
             StackPane.setAlignment(labelHautDroite, Pos.TOP_RIGHT);
 
-            // Ajoutez le nouveau label en bas à gauche
-            Label labelBasGauche = new Label(String.valueOf(nbrOfEventsOnCurrentDate)+" evenements");
+            Label labelBasGauche = new Label(String.valueOf(nbrOfEventsOnCurrentDate) + " evenements");
             labelBasGauche.setStyle("-fx-font-size: 10pt; -fx-text-fill: black; -fx-font-family: Arial; -fx-background-color: #B0E0E6; -fx-border-color: #4682B4; -fx-padding: 5px;");
             stackPane.getChildren().add(labelBasGauche);
             StackPane.setAlignment(labelBasGauche, Pos.BOTTOM_LEFT);
@@ -155,43 +146,18 @@ public class MonthlyCalendarViewController implements Initializable, NextPreviou
             monthlyCalendarView.add(stackPane, colonne, ligne);
 
             numeroJour++;
-
-            // Passer à la ligne suivante et réinitialiser la colonne si nécessaire
             colonne = (colonne + 1) % 7;
             if (colonne == 0) {
                 ligne++;
             }
         }
     }
-
-    public int extractDayIndex(Event event){
-        String dateString = event.getDtstart();
-
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-
-        // Analyser la chaîne de caractères de date en un objet LocalDateTime
-        LocalDateTime dateTime = LocalDateTime.parse(dateString, formatter);
-
-        // Extraire la date pour obtenir l'index du jour de la semaine
-        LocalDate date = dateTime.toLocalDate();
-
-        return date.getDayOfWeek().getValue() - 1;
-    }
-
-    public int extractWeekIndex(Event event){
-        String dateString = event.getDtstart();
-
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-
-        // Analyser la chaîne de caractères de date en un objet LocalDateTime
-        LocalDateTime dateTime = LocalDateTime.parse(dateString, formatter);
-
-        // Extraire la date pour obtenir l'index du jour de la semaine
-        LocalDate date = dateTime.toLocalDate();
-
-        WeekFields weekFields = WeekFields.of(Locale.getDefault());
-
-        return date.get(weekFields.weekOfMonth());
+    public void updateCurrentData(String searchDate,String filreValue,int edtId,int personalEdtId, String filtreCondition){
+        currentSearchDate=searchDate;
+        currentFiltreValue=filreValue;
+        currentEdtId=edtId;
+        currentPersonalEdtId=personalEdtId;
+        currentFiltreCondition=filtreCondition;
     }
 
     public void clearMonthlyView(){
@@ -230,9 +196,8 @@ public class MonthlyCalendarViewController implements Initializable, NextPreviou
 
         String datePlusOneMonthString = formatter.format(datePlusOneMonth);
 
-        clearMonthlyView();
 
-        addMonthDaysToView(datePlusOneMonthString);
+        addMonthDaysToView(datePlusOneMonthString,currentFiltreValue,currentEdtId,currentPersonalEdtId,currentFiltreCondition);
 
         return datePlusOneMonthString;
     }
@@ -249,25 +214,23 @@ public class MonthlyCalendarViewController implements Initializable, NextPreviou
 
         String dateMinusOneMonthString = formatter.format(dateMinusOneMonth);
 
-        clearMonthlyView();
-
-        addMonthDaysToView(dateMinusOneMonthString);
+        addMonthDaysToView(dateMinusOneMonthString,currentFiltreValue,currentEdtId,currentPersonalEdtId,currentFiltreCondition);
 
         return dateMinusOneMonthString;
     }
 
     @Override
     public void onSalleFiltre(String searchDate, String filtreValue, int edtId, int personalEdtId) {
-
+        addMonthDaysToView(searchDate, filtreValue, edtId, personalEdtId, " AND salle = ?");
     }
 
     @Override
     public void onTypeFiltre(String searchDate, String filtreValue, int edtId, int personalEdtId) {
-
+        addMonthDaysToView(searchDate, filtreValue, edtId, personalEdtId, " AND type = ?");
     }
 
     @Override
     public void onMatiereFiltre(String searchDate, String filtreValue, int edtId, int personalEdtId) {
-
+        addMonthDaysToView(searchDate, filtreValue, edtId, personalEdtId, " AND matiere = ?");
     }
 }
