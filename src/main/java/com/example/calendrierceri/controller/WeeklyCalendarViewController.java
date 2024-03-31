@@ -66,8 +66,10 @@ public class WeeklyCalendarViewController implements Initializable, NextPrevious
         currentUser=user;
         if(currentUser.getRole().equals("Etudiant")){
             mapWeekInfo(searchData, currentUser.getEdtPersonnelId(), currentUser.getEdtFormationId());
+            updateCurrentData(searchData,"","",currentUser.getEdtFormationId(),currentUser.getEdtPersonnelId(),"");
         }else {
             mapWeekInfo(searchData,currentUser.getEdtPersonnelId(), currentUser.getEdtProfId());
+            updateCurrentData(searchData,"","",currentUser.getEdtProfId(),currentUser.getEdtPersonnelId(),"");
         }
         addEventsToView(currentWeekEvents);
     }
