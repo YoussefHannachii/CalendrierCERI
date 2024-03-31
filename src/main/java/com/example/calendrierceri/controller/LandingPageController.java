@@ -4,6 +4,7 @@ import com.example.calendrierceri.model.User;
 import com.example.calendrierceri.util.FilterPopulator;
 import com.example.calendrierceri.util.FiltreService;
 import com.example.calendrierceri.util.NextPreviousService;
+import com.example.calendrierceri.util.SearchService;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -56,6 +57,15 @@ public class LandingPageController  implements Initializable  {
     @FXML
     private MenuButton filtreSalle;
 
+    @FXML
+    private MenuButton searchTypeMenu;
+
+    @FXML
+    private TextField searchTypeInput;
+
+    @FXML
+    private Button searchButton;
+
     private User currentUser;
 
     private String currentDisplayedDate;
@@ -64,6 +74,9 @@ public class LandingPageController  implements Initializable  {
 
     private FiltreService currentFiltreService;
 
+    private SearchService currentSearchService;
+
+
     private FilterPopulator filterPopulator;
 
     @FXML
@@ -71,6 +84,8 @@ public class LandingPageController  implements Initializable  {
 
     private static final String LIGHT_MODE_STYLE = "-fx-background-color: white; -fx-text-fill: black;";
     private static final String DARK_MODE_STYLE = "-fx-background-color: #4C4C4C; -fx-text-fill: white;";
+
+
 
 
     public void setCurrentUser(User user) throws SQLException {
@@ -103,7 +118,6 @@ public class LandingPageController  implements Initializable  {
     @Override
     public void initialize(URL url, ResourceBundle rb) {
 
-
         themeToggle.setOnAction(event -> {
             if (themeToggle.isSelected()) {
                 safelyApplyDarkMode();
@@ -112,18 +126,24 @@ public class LandingPageController  implements Initializable  {
             }
         });
 
+        searchTypeMenu.getItems().clear();
         calendarViewType.getItems().clear();
+
+        MenuItem specialitySearchItem = new MenuItem("Search By Speciality");
+        MenuItem teacherSearchItem = new MenuItem("Search By Teacher");
+        MenuItem classSearchItem = new MenuItem("Search By Class");
 
         MenuItem weeklyMenuItem = new MenuItem("Weekly");
         MenuItem dailyMenuItem = new MenuItem("Daily");
         MenuItem monthlyMenuItem = new MenuItem("Monthly");
 
 
+        searchTypeMenu.getItems().addAll(specialitySearchItem,teacherSearchItem,classSearchItem);
+
         // Ajouter les éléments de menu au MenuButton
         calendarViewType.getItems().addAll(dailyMenuItem, weeklyMenuItem, monthlyMenuItem);
 
         LocalDate today = LocalDate.now();
-
 
         // Formater la date dans le format "yyyy-MM-dd"
         DateTimeFormatter formater = DateTimeFormatter.ofPattern("yyyy-MM-dd");
@@ -131,16 +151,43 @@ public class LandingPageController  implements Initializable  {
 
         updateMonthDisplayed(currentDisplayedDate);
 
-        nextDisplayButton.setOnAction(event -> {
-            if (currentNextPreviousService != null) {
-                String nextDate = currentNextPreviousService.onNext(currentDisplayedDate);
-                currentDisplayedDate = nextDate;
-                updateMonthDisplayed(currentDisplayedDate);
-            } else {
-                System.out.println("currentNextPreviousService is not initialized!");
-            }
+        specialitySearchItem.setOnAction(event ->{
+            searchTypeMenu.setText("Search by Speciality");
+            searchButton.setOnAction(event1 -> {
+                String searchValue = "edt_formation_"+searchTypeInput.getText().toLowerCase();
+                labelEdtInfo.setText(searchTypeInput.getText().toUpperCase()+" Speciality Calendar.");
+                currentSearchService.onSpecialitySearch(currentDisplayedDate,searchValue);
+            });
         });
 
+        teacherSearchItem.setOnAction(event ->{
+            searchTypeMenu.setText("Search by Teacher");
+            searchButton.setOnAction(event1 -> {
+                String searchValue = "edt_prof_"+searchTypeInput.getText().replace(" ", "_").toLowerCase();
+                labelEdtInfo.setText(searchTypeInput.getText().toUpperCase()+" Teacher Calendar.");
+                currentSearchService.onTeacherSearch(currentDisplayedDate,searchValue);
+            });
+        });
+
+        classSearchItem.setOnAction(event ->{
+            searchTypeMenu.setText("Search by Class");
+            searchButton.setOnAction(event1 -> {
+                String searchValue ="edt_salle_"+ searchTypeInput.getText().toLowerCase();
+                labelEdtInfo.setText(searchTypeInput.getText().toUpperCase()+" Class Calendar.");
+                currentSearchService.onClassSearch(currentDisplayedDate,searchValue);
+            });
+        });
+
+        nextDisplayButton.setOnAction(event ->{
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+            // Convertir la chaîne en LocalDate
+            LocalDate date = LocalDate.parse(currentDisplayedDate, formatter);
+
+            currentDisplayedDate = currentNextPreviousService.onNext(formatter.format(date));
+
+            updateMonthDisplayed(currentDisplayedDate);
+        });
 
         previousDisplayButton.setOnAction(event -> {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
@@ -162,15 +209,17 @@ public class LandingPageController  implements Initializable  {
                 weeklyCalendarViewController.initializeWeeklyData(currentDisplayedDate,currentUser);
                 if (calendarViewVBox.getChildren().isEmpty()) {
                     calendarViewVBox.getChildren().add(weeklyView);
-                    //calendarViewVBox.setFillWidth(true);
                 } else {
                     // Remplacer le contenu existant
                     calendarViewVBox.getChildren().set(0, weeklyView);
                 }
                 currentNextPreviousService = weeklyCalendarViewController;
                 currentFiltreService = weeklyCalendarViewController;
+                currentSearchService = weeklyCalendarViewController;
             } catch (IOException e) {
                 e.printStackTrace();
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
             }
         });
 
@@ -178,17 +227,17 @@ public class LandingPageController  implements Initializable  {
             try {
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/calendrierceri/dailyCalendarView.fxml"));
                 Node dailyView = loader.load();
-                DailyCalendarViewController controller = loader.getController();
-                controller.initializeDailyData(currentUser, LocalDate.now()); // Assurez-vous que cette date est correcte
+                DailyCalendarViewController dailyCalendarViewController = loader.getController();
+                dailyCalendarViewController.initializeDailyData(currentUser, LocalDate.now());
                 calendarViewVBox.getChildren().setAll(dailyView);
 
-                currentNextPreviousService = controller; // Correction importante ici
-                currentFiltreService = controller;
+                currentNextPreviousService = dailyCalendarViewController;
+                currentFiltreService = dailyCalendarViewController;
+                currentSearchService = dailyCalendarViewController;
             } catch (IOException e) {
                 e.printStackTrace();
             }
         });
-
 
         monthlyMenuItem.setOnAction(event -> {
             try {
@@ -204,8 +253,11 @@ public class LandingPageController  implements Initializable  {
                 }
                 currentNextPreviousService = monthlyCalendarViewController;
                 currentFiltreService = monthlyCalendarViewController;
+                currentSearchService = monthlyCalendarViewController;
             } catch (IOException e) {
                 e.printStackTrace();
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
             }
         });
     }
@@ -267,7 +319,6 @@ public class LandingPageController  implements Initializable  {
         }
 
     }
-
     private void safelyApplyLightMode() {
         Platform.runLater(() -> {
             if (calendarViewVBox.getScene() != null && calendarViewVBox.getScene().getRoot() != null) {
@@ -283,5 +334,7 @@ public class LandingPageController  implements Initializable  {
             }
         });
     }
+
+
 
 }

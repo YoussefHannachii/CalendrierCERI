@@ -47,14 +47,14 @@
     <children>
         <HBox alignment="CENTER" VBox.vgrow="NEVER">
             <children>
-                <MenuButton mnemonicParsing="false" text="Type">
+                <MenuButton fx:id="searchTypeMenu" mnemonicParsing="false" text="Type">
                     <items>
                         <MenuItem mnemonicParsing="false" text="Action 1" />
                         <MenuItem mnemonicParsing="false" text="Action 2" />
                     </items>
                 </MenuButton>
-                <TextField alignment="CENTER" HBox.hgrow="NEVER" />
-                <Button alignment="CENTER" mnemonicParsing="false" text="Search" HBox.hgrow="NEVER" />
+                <TextField fx:id="searchTypeInput" alignment="CENTER" HBox.hgrow="NEVER" />
+                <Button fx:id="searchButton" alignment="CENTER" mnemonicParsing="false" text="Search" HBox.hgrow="NEVER" />
                 <Region prefHeight="98.0" prefWidth="234.0">
                     <HBox.margin>
                         <Insets />
