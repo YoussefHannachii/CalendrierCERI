@@ -60,7 +60,7 @@
                   <Insets />
                </HBox.margin>
             </Region>
-            <ToggleButton alignment="CENTER_RIGHT" mnemonicParsing="false" text="Light mode" HBox.hgrow="NEVER">
+            <ToggleButton fx:id="themeToggle" alignment="CENTER_RIGHT" mnemonicParsing="false" text="Light mode" HBox.hgrow="NEVER">
                <HBox.margin>
                   <Insets left="200.0" />
                </HBox.margin>

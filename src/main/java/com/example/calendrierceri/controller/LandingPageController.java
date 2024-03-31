@@ -5,6 +5,7 @@ import com.example.calendrierceri.util.FilterPopulator;
 import com.example.calendrierceri.util.FiltreService;
 import com.example.calendrierceri.util.NextPreviousService;
 import com.example.calendrierceri.util.SearchService;
+import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
@@ -77,6 +78,12 @@ public class LandingPageController  implements Initializable  {
 
     private FilterPopulator filterPopulator;
 
+    @FXML
+    private ToggleButton themeToggle;
+
+    private static final String LIGHT_MODE_STYLE = "-fx-background-color: white; -fx-text-fill: black;";
+    private static final String DARK_MODE_STYLE = "-fx-background-color: #4C4C4C; -fx-text-fill: white;";
+
 
 
     public void setCurrentUser(User user) throws SQLException {
@@ -109,6 +116,13 @@ public class LandingPageController  implements Initializable  {
     @Override
     public void initialize(URL url, ResourceBundle rb) {
 
+        themeToggle.setOnAction(event -> {
+            if (themeToggle.isSelected()) {
+                safelyApplyDarkMode();
+            } else {
+                safelyApplyLightMode();
+            }
+        });
 
         searchTypeMenu.getItems().clear();
         calendarViewType.getItems().clear();
@@ -207,20 +221,21 @@ public class LandingPageController  implements Initializable  {
                 }
             });
 
-            dailyMenuItem.setOnAction(event -> {
-                try {
-                    Node dailyView = FXMLLoader.load(getClass().getResource("/com/example/calendrierceri/dailyCalendarView.fxml"));
-                    if (calendarViewVBox.getChildren().isEmpty()) {
-                        calendarViewVBox.getChildren().add(dailyView);
-                    } else {
-                        // Remplacer le contenu existant
-                        calendarViewVBox.getChildren().set(0, dailyView);
-                    }
-                    //currentNextPreviousService = dailyCalendarViewController;
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            });
+        dailyMenuItem.setOnAction(event -> {
+            try {
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/calendrierceri/dailyCalendarView.fxml"));
+                Node dailyView = loader.load();
+                DailyCalendarViewController dailyCalendarViewController = loader.getController();
+                dailyCalendarViewController.initializeDailyData(currentUser, LocalDate.now());
+                calendarViewVBox.getChildren().setAll(dailyView);
+
+                currentNextPreviousService = dailyCalendarViewController;
+                currentFiltreService = dailyCalendarViewController;
+                currentSearchService = dailyCalendarViewController;
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
 
         monthlyMenuItem.setOnAction(event -> {
             try {
@@ -301,6 +316,23 @@ public class LandingPageController  implements Initializable  {
             filtreType.getItems().add(typeItem);
         }
 
+    }
+
+
+    private void safelyApplyLightMode() {
+        Platform.runLater(() -> {
+            if (calendarViewVBox.getScene() != null && calendarViewVBox.getScene().getRoot() != null) {
+                calendarViewVBox.getScene().getRoot().setStyle(LIGHT_MODE_STYLE);
+            }
+        });
+    }
+
+    private void safelyApplyDarkMode() {
+        Platform.runLater(() -> {
+            if (calendarViewVBox.getScene() != null && calendarViewVBox.getScene().getRoot() != null) {
+                calendarViewVBox.getScene().getRoot().setStyle(DARK_MODE_STYLE);
+            }
+        });
     }
 
 }

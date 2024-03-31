@@ -150,7 +150,7 @@ public class WeeklyCalendarViewController implements Initializable, NextPrevious
     }
 
 
-    private Event mapResultSetToEvent(ResultSet resultSet) throws SQLException {
+    public static Event mapResultSetToEvent(ResultSet resultSet) throws SQLException {
         Event event = new Event();
         event.setEventId(resultSet.getInt("event_id"));
         event.setDtstart(resultSet.getString("dtstart"));
@@ -207,7 +207,7 @@ public class WeeklyCalendarViewController implements Initializable, NextPrevious
         return DriverManager.getConnection(url, username, password);
     }
 
-    public int[] extractHourIndexesOnCalendarView(Event event){
+    public static int[] extractHourIndexesOnCalendarView(Event event){
 
         String dateStringDebut = event.getDtstart();
         String dateStringFin = event.getDtend();
