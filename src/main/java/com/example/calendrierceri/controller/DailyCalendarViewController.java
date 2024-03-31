@@ -3,6 +3,7 @@ package com.example.calendrierceri.controller;
 import com.example.calendrierceri.model.Event;
 import com.example.calendrierceri.model.User;
 import com.example.calendrierceri.util.FiltreService; // Assurez-vous que cette importation est correcte
+import com.example.calendrierceri.util.NextPreviousService;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
@@ -20,7 +21,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
-public class DailyCalendarViewController implements Initializable, FiltreService {
+public class DailyCalendarViewController implements Initializable, FiltreService, NextPreviousService {
 
     @FXML
     private GridPane dailyCalendarView;
@@ -140,17 +141,19 @@ public class DailyCalendarViewController implements Initializable, FiltreService
     }
 
     // Ajoutez les méthodes pour le jour suivant et précédent
-    @FXML
-    public void goToNextDay() {
-        currentDate = currentDate.plusDays(1);
-        loadEventsForDay(currentDate);
-        addEventsToView();
+    @Override
+    public String onNext(String searchDate) {
+        LocalDate date = LocalDate.parse(searchDate).plusDays(1);
+        initializeDailyData(currentUser, date);
+        return date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
     }
 
-    @FXML
-    public void goToPreviousDay() {
-        currentDate = currentDate.minusDays(1);
-        loadEventsForDay(currentDate);
-        addEventsToView();
+    @Override
+    public String onPrevious(String searchDate) {
+        LocalDate date = LocalDate.parse(searchDate).minusDays(1);
+        initializeDailyData(currentUser, date);
+        return date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
     }
+
+
 }

@@ -17,10 +17,6 @@
          <font>
             <Font name="Reem Kufi Bold" size="14.0" />
          </font></Label>
-        <HBox alignment="CENTER" spacing="10">
-            <Button fx:id="previousDayButton" onAction="#goToPreviousDay" text="Précédent" />
-            <Button fx:id="nextDayButton" onAction="#goToNextDay" text="Suivant" />
-        </HBox>
       <Pane prefHeight="618.0" prefWidth="890.0">
          <children>
               <GridPane fx:id="dailyCalendarView" gridLinesVisible="true" layoutX="178.0" layoutY="3.0" prefHeight="544.0" prefWidth="759.0">

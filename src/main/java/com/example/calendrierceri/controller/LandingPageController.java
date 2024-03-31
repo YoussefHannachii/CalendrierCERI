@@ -131,16 +131,16 @@ public class LandingPageController  implements Initializable  {
 
         updateMonthDisplayed(currentDisplayedDate);
 
-        nextDisplayButton.setOnAction(event ->{
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-
-            // Convertir la chaîne en LocalDate
-            LocalDate date = LocalDate.parse(currentDisplayedDate, formatter);
-
-            currentDisplayedDate = currentNextPreviousService.onNext(formatter.format(date));
-
-            updateMonthDisplayed(currentDisplayedDate);
+        nextDisplayButton.setOnAction(event -> {
+            if (currentNextPreviousService != null) {
+                String nextDate = currentNextPreviousService.onNext(currentDisplayedDate);
+                currentDisplayedDate = nextDate;
+                updateMonthDisplayed(currentDisplayedDate);
+            } else {
+                System.out.println("currentNextPreviousService is not initialized!");
+            }
         });
+
 
         previousDisplayButton.setOnAction(event -> {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
@@ -178,21 +178,17 @@ public class LandingPageController  implements Initializable  {
             try {
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/calendrierceri/dailyCalendarView.fxml"));
                 Node dailyView = loader.load();
-                DailyCalendarViewController dailyCalendarViewController = loader.getController();
-                // Utilisez LocalDate.now() ou une autre date si nécessaire
-                dailyCalendarViewController.initializeDailyData(currentUser, LocalDate.now());
+                DailyCalendarViewController controller = loader.getController();
+                controller.initializeDailyData(currentUser, LocalDate.now()); // Assurez-vous que cette date est correcte
+                calendarViewVBox.getChildren().setAll(dailyView);
 
-                if (calendarViewVBox.getChildren().isEmpty()) {
-                    calendarViewVBox.getChildren().add(dailyView);
-                } else {
-                    // Remplacer le contenu existant
-                    calendarViewVBox.getChildren().set(0, dailyView);
-                }
-                currentFiltreService = dailyCalendarViewController;
+                currentNextPreviousService = controller; // Correction importante ici
+                currentFiltreService = controller;
             } catch (IOException e) {
                 e.printStackTrace();
             }
         });
+
 
         monthlyMenuItem.setOnAction(event -> {
             try {
