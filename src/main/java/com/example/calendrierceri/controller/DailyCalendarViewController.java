@@ -20,7 +20,12 @@ import java.util.ResourceBundle;
 import java.util.ArrayList;
 import java.util.Locale;
 
-public class DailyCalendarViewController implements Initializable {
+import com.example.calendrierceri.util.FiltreService;
+
+import static com.example.calendrierceri.controller.WeeklyCalendarViewController.extractHourIndexesOnCalendarView;
+import static com.example.calendrierceri.controller.WeeklyCalendarViewController.mapResultSetToEvent;
+
+public class DailyCalendarViewController implements Initializable, FiltreService {
 
     @FXML
     private GridPane dailyCalendarView;
@@ -32,6 +37,9 @@ public class DailyCalendarViewController implements Initializable {
     private LocalDate currentDate;
     @FXML
     private Label currentDateLabel;
+
+    private String currentFiltreCondition = "";
+    private String currentFiltreValue = "";
 
 
     @Override
@@ -59,43 +67,42 @@ public class DailyCalendarViewController implements Initializable {
     }
 
     private void loadEventsForDay(LocalDate date) {
-        currentDayEvents.clear(); // Effacer les événements existants
+        currentDayEvents.clear();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        String dateString = date.format(formatter);
+        String dateString = date.format(formatter) + "%";
 
-        // Construire la requête SQL pour récupérer les événements du jour pour l'utilisateur connecté
         String sqlQuery = "SELECT * FROM events WHERE dtstart LIKE ? AND (edt_id = ? OR edt_id = ?)";
+        if (!this.currentFiltreCondition.isEmpty() && !this.currentFiltreValue.isEmpty()) {
+            sqlQuery += " AND " + this.currentFiltreCondition + " = ?";
+        }
 
         try (PreparedStatement statement = connection.prepareStatement(sqlQuery)) {
-            statement.setString(1, dateString + "%"); // Utiliser le LIKE pour filtrer sur la date
-            if(currentUser.getRole().equals("Etudiant")) {
-                // Pour un étudiant, filtrer par son ID personnel et son ID de formation
-                statement.setInt(2, currentUser.getEdtPersonnelId());
-                statement.setInt(3, currentUser.getEdtFormationId());
-            } else {
-                // Pour un enseignant, utiliser son ID personnel et potentiellement un autre critère spécifique aux enseignants
-                statement.setInt(2, currentUser.getEdtPersonnelId());
-                // Supposons ici qu'un enseignant pourrait aussi avoir un ID de formation pour des cas particuliers
-                statement.setInt(3, currentUser.getEdtProfId()); // Remplacer par un ID approprié si nécessaire
+            statement.setString(1, dateString);
+            statement.setInt(2, currentUser.getEdtPersonnelId());
+            int edtId = currentUser.getEdtFormationId() != 0 ? currentUser.getEdtFormationId() : currentUser.getEdtProfId();
+            statement.setInt(3, edtId);
+            if (!this.currentFiltreCondition.isEmpty() && !this.currentFiltreValue.isEmpty()) {
+                statement.setString(4, this.currentFiltreValue);
             }
 
-            try (ResultSet resultSet = statement.executeQuery()) {
-                while (resultSet.next()) {
-                    Event event = WeeklyCalendarViewController.mapResultSetToEvent(resultSet);
-                    currentDayEvents.add(event);
-                }
+            ResultSet resultSet = statement.executeQuery();
+            while (resultSet.next()) {
+                Event event = mapResultSetToEvent(resultSet);
+                currentDayEvents.add(event);
             }
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            e.printStackTrace();
+            // Gérer l'exception correctement
         }
+        addEventsToView();
     }
 
 
     private void addEventsToView() {
-        dailyCalendarView.getChildren().clear(); // Assurez-vous de nettoyer la vue avant d'ajouter des événements
+        dailyCalendarView.getChildren().clear();
         for (Event event : currentDayEvents) {
-            Label eventLabel = createLabelFromEvent(event); // Utilisez la méthode locale
-            int[] eventTimeIndexes = WeeklyCalendarViewController.extractHourIndexesOnCalendarView(event);
+            Label eventLabel = createLabelFromEvent(event);
+            int[] eventTimeIndexes = extractHourIndexesOnCalendarView(event);
 
             dailyCalendarView.add(eventLabel, 0, eventTimeIndexes[0], 1, eventTimeIndexes[1] - eventTimeIndexes[0]);
         }
@@ -139,5 +146,24 @@ public class DailyCalendarViewController implements Initializable {
     }
 
 
+    @Override
+    public void onSalleFiltre(String searchDate, String filtreValue, int edtId, int personalEdtId) {
+        this.currentFiltreCondition = "salle";
+        this.currentFiltreValue = filtreValue;
+        loadEventsForDay(this.currentDate);
+    }
 
+    @Override
+    public void onTypeFiltre(String searchDate, String filtreValue, int edtId, int personalEdtId) {
+        this.currentFiltreCondition = "type";
+        this.currentFiltreValue = filtreValue;
+        loadEventsForDay(this.currentDate);
+    }
+
+    @Override
+    public void onMatiereFiltre(String searchDate, String filtreValue, int edtId, int personalEdtId) {
+        this.currentFiltreCondition = "matiere";
+        this.currentFiltreValue = filtreValue;
+        loadEventsForDay(this.currentDate);
+    }
 }

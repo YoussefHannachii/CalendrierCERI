@@ -5,110 +5,84 @@
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
-<?import javafx.scene.text.Font?>
 
-<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="629.0" prefWidth="855.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.calendrierceri.controller.WeeklyCalendarViewController">
-   <children>
-      <GridPane fx:id="weeklyCalendarView" gridLinesVisible="true" prefHeight="617.0" prefWidth="855.0">
-        <columnConstraints>
-          <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-          <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-        </columnConstraints>
-        <rowConstraints>
-            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-        </rowConstraints>
-         <children>
-            <Label alignment="CENTER" contentDisplay="CENTER" text="Lundi" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
-               <font>
-                  <Font name="System Bold" size="14.0" />
-               </font></Label>
-            <Label alignment="CENTER" contentDisplay="CENTER" text="Mardi" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
-               <font>
-                  <Font name="System Bold" size="14.0" />
-               </font></Label>
-            <Label alignment="CENTER" contentDisplay="CENTER" text="Mercredi" GridPane.columnIndex="3" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
-               <font>
-                  <Font name="System Bold" size="14.0" />
-               </font></Label>
-            <Label alignment="CENTER" contentDisplay="CENTER" text="Jeudi" GridPane.columnIndex="4" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
-               <font>
-                  <Font name="System Bold" size="14.0" />
-               </font></Label>
-            <Label alignment="CENTER" contentDisplay="CENTER" text="Vendredi" GridPane.columnIndex="5" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
-               <font>
-                  <Font name="System Bold" size="14.0" />
-               </font></Label>
-            <Label alignment="CENTER" contentDisplay="CENTER" text="Samedi" GridPane.columnIndex="6" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
-               <font>
-                  <Font name="System Bold" size="14.0" />
-               </font></Label>
-            <Label alignment="CENTER" contentDisplay="CENTER" text="Dimanche" GridPane.columnIndex="7" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
-               <font>
-                  <Font name="System Bold" size="14.0" />
-               </font></Label>
-            <Label text="8:00 - 9:00" GridPane.halignment="CENTER" GridPane.rowIndex="1">
-               <font>
-                  <Font name="System Bold" size="14.0" />
-               </font></Label>
-            <Label text="9:00 - 10:00" GridPane.halignment="CENTER" GridPane.rowIndex="2">
-               <font>
-                  <Font name="System Bold" size="14.0" />
-               </font></Label>
-            <Label text="10:00 - 11:00" GridPane.halignment="CENTER" GridPane.rowIndex="3">
-               <font>
-                  <Font name="System Bold" size="14.0" />
-               </font></Label>
-            <Label text="11:00 - 12:00" GridPane.halignment="CENTER" GridPane.rowIndex="4">
-               <font>
-                  <Font name="System Bold" size="14.0" />
-               </font></Label>
-            <Label text="12:00 - 13:00" GridPane.halignment="CENTER" GridPane.rowIndex="5">
-               <font>
-                  <Font name="System Bold" size="14.0" />
-               </font></Label>
-            <Label text="13:00 - 14:00" GridPane.halignment="CENTER" GridPane.rowIndex="6">
-               <font>
-                  <Font name="System Bold" size="14.0" />
-               </font></Label>
-            <Label text="14:00 - 15:00" GridPane.halignment="CENTER" GridPane.rowIndex="7">
-               <font>
-                  <Font name="System Bold" size="14.0" />
-               </font></Label>
-            <Label text="15:00 - 16:00" GridPane.halignment="CENTER" GridPane.rowIndex="8">
-               <font>
-                  <Font name="System Bold" size="14.0" />
-               </font></Label>
-            <Label text="16:00 - 17:00" GridPane.halignment="CENTER" GridPane.rowIndex="9">
-               <font>
-                  <Font name="System Bold" size="14.0" />
-               </font></Label>
-            <Label text="17:00 - 18:00" GridPane.halignment="CENTER" GridPane.rowIndex="10">
-               <font>
-                  <Font name="System Bold" size="14.0" />
-               </font></Label>
-            <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="20.0" prefWidth="108.0" text="   18:00 - 19:00" textAlignment="CENTER" GridPane.rowIndex="11">
-               <font>
-                  <Font name="System Bold" size="14.0" />
-               </font>
-            </Label>
-         </children>
-      </GridPane>
-   </children>
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="577.0" prefWidth="1222.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.calendrierceri.controller.WeeklyCalendarViewController">
+    <children>
+        <GridPane fx:id="weeklyCalendarView" gridLinesVisible="true" prefHeight="724.0" prefWidth="1325.0">
+            <columnConstraints>
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+            </columnConstraints>
+            <rowConstraints>
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+            </rowConstraints>
+            <children>
+                <Label text="6:00=&gt;7:00" GridPane.halignment="CENTER" GridPane.rowIndex="1" />
+                <Label text="7:00=&gt;8:00" GridPane.halignment="CENTER" GridPane.rowIndex="2" />
+                <Label text="8:00=&gt;9:00" GridPane.halignment="CENTER" GridPane.rowIndex="3" />
+                <Label text="9:00=&gt;10:00" GridPane.halignment="CENTER" GridPane.rowIndex="4" />
+                <Label text="10:00=&gt;11:00" GridPane.halignment="CENTER" GridPane.rowIndex="5" />
+                <Label text="11:00=&gt;12:00" GridPane.halignment="CENTER" GridPane.rowIndex="6" />
+                <Label text="12:00=&gt;13:00" GridPane.halignment="CENTER" GridPane.rowIndex="7" />
+                <Label text="13:00=&gt;14:00" GridPane.halignment="CENTER" GridPane.rowIndex="8" />
+                <Label text="14:00=&gt;15:00" GridPane.halignment="CENTER" GridPane.rowIndex="9" />
+                <Label text="15:00=&gt;16:00" GridPane.halignment="CENTER" GridPane.rowIndex="10" />
+                <Label text="16:00=&gt;17:00" GridPane.halignment="CENTER" GridPane.rowIndex="11" />
+                <Label text="17:00=&gt;18:00" GridPane.halignment="CENTER" GridPane.rowIndex="12" />
+                <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" GridPane.columnIndex="1">
+                    <children>
+                        <Label text="Lundi" />
+                    </children>
+                </VBox>
+                <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" GridPane.columnIndex="2">
+                    <children>
+                        <Label text="Mardi" />
+                    </children>
+                </VBox>
+                <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" GridPane.columnIndex="7">
+                    <children>
+                        <Label text="Dimanche" />
+                    </children>
+                </VBox>
+                <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" GridPane.columnIndex="3">
+                    <children>
+                        <Label text="Mercredi" />
+                    </children>
+                </VBox>
+                <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" GridPane.columnIndex="4">
+                    <children>
+                        <Label text="Jeudi" />
+                    </children>
+                </VBox>
+                <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" GridPane.columnIndex="5">
+                    <children>
+                        <Label text="Vendredi" />
+                    </children>
+                </VBox>
+                <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" GridPane.columnIndex="6">
+                    <children>
+                        <Label text="Samedi" />
+                    </children>
+                </VBox>
+            </children>
+        </GridPane>
+    </children>
 </VBox>

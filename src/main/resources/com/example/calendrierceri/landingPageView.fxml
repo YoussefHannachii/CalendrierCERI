@@ -42,126 +42,120 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
-<?import javafx.scene.text.Font?>
 
-<VBox prefHeight="623.0" prefWidth="849.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.calendrierceri.controller.LandingPageController">
-   <children>
-      <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0">
-         <children>
-            <MenuButton mnemonicParsing="false" text="Type">
-              <items>
-                <MenuItem mnemonicParsing="false" text="Action 1" />
-                <MenuItem mnemonicParsing="false" text="Action 2" />
-              </items>
-            </MenuButton>
-            <TextField alignment="CENTER" HBox.hgrow="NEVER" />
-            <Button alignment="CENTER" mnemonicParsing="false" text="Search" HBox.hgrow="NEVER" />
-            <Region prefHeight="100.0" prefWidth="151.0">
-               <HBox.margin>
-                  <Insets />
-               </HBox.margin>
-            </Region>
-            <ToggleButton fx:id="themeToggle" alignment="CENTER_RIGHT" mnemonicParsing="false" text="Light mode" HBox.hgrow="NEVER">
-               <HBox.margin>
-                  <Insets left="50.0" />
-               </HBox.margin>
-            </ToggleButton>
-         </children>
-      </HBox>
-      <HBox prefHeight="525.0" prefWidth="850.0">
-         <children>
-            <VBox alignment="TOP_CENTER" prefHeight="525.0" prefWidth="182.0">
-               <children>
-                  <Label prefHeight="18.0" prefWidth="49.0" text="Filters" textFill="#0d0d0d">
-                     <VBox.margin>
-                        <Insets bottom="40.0" />
-                     </VBox.margin>
-                     <font>
-                        <Font name="System Bold" size="15.0" />
-                     </font>
-                  </Label>
-                  <MenuButton mnemonicParsing="false" text="MenuButton">
+<VBox alignment="CENTER" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.calendrierceri.controller.LandingPageController">
+    <children>
+        <HBox alignment="CENTER" VBox.vgrow="NEVER">
+            <children>
+                <MenuButton mnemonicParsing="false" text="Type">
                     <items>
-                      <MenuItem mnemonicParsing="false" text="Action 1" />
-                      <MenuItem mnemonicParsing="false" text="Action 2" />
+                        <MenuItem mnemonicParsing="false" text="Action 1" />
+                        <MenuItem mnemonicParsing="false" text="Action 2" />
                     </items>
-                     <VBox.margin>
-                        <Insets bottom="20.0" />
-                     </VBox.margin>
-                  </MenuButton>
-                  <MenuButton mnemonicParsing="false" text="MenuButton">
-                    <items>
-                      <MenuItem mnemonicParsing="false" text="Action 1" />
-                      <MenuItem mnemonicParsing="false" text="Action 2" />
-                    </items>
-                     <VBox.margin>
-                        <Insets bottom="20.0" />
-                     </VBox.margin>
-                  </MenuButton>
-                  <MenuButton mnemonicParsing="false" text="MenuButton">
-                    <items>
-                      <MenuItem mnemonicParsing="false" text="Action 1" />
-                      <MenuItem mnemonicParsing="false" text="Action 2" />
-                    </items>
-                     <VBox.margin>
-                        <Insets bottom="20.0" />
-                     </VBox.margin>
-                  </MenuButton>
-                  <MenuButton mnemonicParsing="false" text="MenuButton">
-                    <items>
-                      <MenuItem mnemonicParsing="false" text="Action 1" />
-                      <MenuItem mnemonicParsing="false" text="Action 2" />
-                    </items>
-                     <VBox.margin>
+                </MenuButton>
+                <TextField alignment="CENTER" HBox.hgrow="NEVER" />
+                <Button alignment="CENTER" mnemonicParsing="false" text="Search" HBox.hgrow="NEVER" />
+                <Region prefHeight="98.0" prefWidth="234.0">
+                    <HBox.margin>
                         <Insets />
-                     </VBox.margin>
-                  </MenuButton>
-                  <Region prefHeight="114.0" prefWidth="182.0" />
-                  <Label prefHeight="23.0" prefWidth="55.0" text="Actions" textFill="#0d0d0d">
-                     <VBox.margin>
-                        <Insets bottom="30.0" />
-                     </VBox.margin>
-                     <font>
-                        <Font name="System Bold" size="15.0" />
-                     </font>
-                  </Label>
-                  <Button mnemonicParsing="false" text="Button">
-                     <VBox.margin>
-                        <Insets bottom="20.0" />
-                     </VBox.margin>
-                  </Button>
-                  <Button mnemonicParsing="false" text="Button" />
-               </children>
-               <HBox.margin>
-                  <Insets />
-               </HBox.margin>
-            </VBox>
-            <VBox prefHeight="525.0" prefWidth="670.0">
-               <children>
-                  <VBox fx:id="containerVBox" layoutX="10.0" layoutY="92.0" prefHeight="758.0" prefWidth="670.0">
-                     <children>
-                        <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0">
-                           <children>
-                              <MenuButton fx:id="calendarViewType" mnemonicParsing="false" text="WeeklyView">
-                                <items>
-                                  <MenuItem mnemonicParsing="false" text="Action 1" />
-                                  <MenuItem mnemonicParsing="false" text="Action 2" />
-                                </items>
-                                 <HBox.margin>
-                                    <Insets left="50.0" />
-                                 </HBox.margin>
-                              </MenuButton>
-                           </children>
-                           <VBox.margin>
-                              <Insets />
-                           </VBox.margin>
-                        </HBox>
-                        <VBox fx:id="calendarViewVBox" prefHeight="426.0" prefWidth="670.0" />
-                     </children>
-                  </VBox>
-               </children>
-            </VBox>
-         </children>
-      </HBox>
-   </children>
+                    </HBox.margin>
+                </Region>
+                <ToggleButton fx:id="themeToggle" alignment="CENTER_RIGHT" mnemonicParsing="false" text="Light mode" HBox.hgrow="NEVER">
+                    <HBox.margin>
+                        <Insets left="200.0" />
+                    </HBox.margin>
+                </ToggleButton>
+            </children>
+        </HBox>
+        <HBox prefHeight="525.0" VBox.vgrow="NEVER">
+            <children>
+                <VBox alignment="TOP_CENTER" prefHeight="525.0" prefWidth="182.0">
+                    <children>
+                        <Label text="Filters">
+                            <VBox.margin>
+                                <Insets bottom="40.0" />
+                            </VBox.margin>
+                        </Label>
+                        <MenuButton fx:id="filtreSalle" mnemonicParsing="false" text="Filtre Class">
+                            <items>
+                                <MenuItem mnemonicParsing="false" text="Action 1" />
+                                <MenuItem mnemonicParsing="false" text="Action 2" />
+                            </items>
+                            <VBox.margin>
+                                <Insets bottom="20.0" />
+                            </VBox.margin>
+                        </MenuButton>
+                        <MenuButton fx:id="filtreType" mnemonicParsing="false" text="Filtre Type">
+                            <items>
+                                <MenuItem mnemonicParsing="false" text="Action 1" />
+                                <MenuItem mnemonicParsing="false" text="Action 2" />
+                            </items>
+                            <VBox.margin>
+                                <Insets bottom="20.0" />
+                            </VBox.margin>
+                        </MenuButton>
+                        <MenuButton fx:id="filtreMatiere" mnemonicParsing="false" text="Filtre Subject">
+                            <items>
+                                <MenuItem mnemonicParsing="false" text="Action 1" />
+                                <MenuItem mnemonicParsing="false" text="Action 2" />
+                            </items>
+                            <VBox.margin>
+                                <Insets bottom="20.0" />
+                            </VBox.margin>
+                        </MenuButton>
+                        <Region prefHeight="114.0" prefWidth="182.0" />
+                        <Label text="Actions">
+                            <VBox.margin>
+                                <Insets bottom="30.0" />
+                            </VBox.margin>
+                        </Label>
+                        <Button mnemonicParsing="false" text="Button">
+                            <VBox.margin>
+                                <Insets bottom="20.0" />
+                            </VBox.margin>
+                        </Button>
+                        <Button mnemonicParsing="false" text="Button" />
+                    </children>
+                    <HBox.margin>
+                        <Insets />
+                    </HBox.margin>
+                </VBox>
+                <VBox prefHeight="525.0" prefWidth="670.0">
+                    <children>
+                        <VBox fx:id="containerVBox" layoutX="10.0" layoutY="92.0" prefHeight="758.0" prefWidth="1000.0" VBox.vgrow="NEVER">
+                            <children>
+                                <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0">
+                                    <children>
+                                        <Label fx:id="labelEdtInfo" text="Label" />
+                                        <Region prefHeight="100.0" prefWidth="82.0" />
+                                        <Button fx:id="previousDisplayButton" mnemonicParsing="false" text="Previous" />
+                                        <MenuButton fx:id="calendarViewType" mnemonicParsing="false" text="View Type">
+                                            <items>
+                                                <MenuItem mnemonicParsing="false" text="Action 1" />
+                                                <MenuItem mnemonicParsing="false" text="Action 2" />
+                                            </items>
+                                            <HBox.margin>
+                                                <Insets />
+                                            </HBox.margin>
+                                        </MenuButton>
+                                        <Button fx:id="nextDisplayButton" mnemonicParsing="false" text="Next" />
+                                        <Region prefHeight="100.0" prefWidth="54.0" />
+                                        <Label fx:id="monthDisplayed" text="Label">
+                                            <HBox.margin>
+                                                <Insets left="50.0" />
+                                            </HBox.margin>
+                                        </Label>
+                                    </children>
+                                    <VBox.margin>
+                                        <Insets />
+                                    </VBox.margin>
+                                </HBox>
+                                <VBox fx:id="calendarViewVBox" VBox.vgrow="NEVER" />
+                            </children>
+                        </VBox>
+                    </children>
+                </VBox>
+            </children>
+        </HBox>
+    </children>
 </VBox>

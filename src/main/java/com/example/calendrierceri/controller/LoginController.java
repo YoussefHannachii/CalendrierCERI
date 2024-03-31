@@ -60,7 +60,7 @@ public class LoginController {
         }
     }
 
-    private void showMainPage(User user) throws IOException {
+    private void showMainPage(User user) throws IOException, SQLException {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/calendrierceri/landingPageView.fxml"));
         Parent landingPage = loader.load();
         LandingPageController landingPageController = loader.getController();
