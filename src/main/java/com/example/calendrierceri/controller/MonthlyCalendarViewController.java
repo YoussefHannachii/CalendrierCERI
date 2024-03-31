@@ -2,8 +2,10 @@ package com.example.calendrierceri.controller;
 
 import com.example.calendrierceri.model.Event;
 import com.example.calendrierceri.model.User;
+import com.example.calendrierceri.util.EdtIdFinder;
 import com.example.calendrierceri.util.FiltreService;
 import com.example.calendrierceri.util.NextPreviousService;
+import com.example.calendrierceri.util.SearchService;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
@@ -27,7 +29,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
-public class MonthlyCalendarViewController implements Initializable, NextPreviousService, FiltreService {
+public class MonthlyCalendarViewController implements Initializable, NextPreviousService, FiltreService, SearchService {
 
     @FXML
     private GridPane monthlyCalendarView;
@@ -37,6 +39,8 @@ public class MonthlyCalendarViewController implements Initializable, NextPreviou
 
     private String currentSearchDate;
 
+    private String currentSearchValue;
+
     private String currentFiltreValue;
 
     private String currentFiltreCondition;
@@ -44,6 +48,8 @@ public class MonthlyCalendarViewController implements Initializable, NextPreviou
     private int currentEdtId;
 
     private int currentPersonalEdtId;
+
+    private EdtIdFinder edtIdFinder;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -55,9 +61,9 @@ public class MonthlyCalendarViewController implements Initializable, NextPreviou
     }
 
 
-    public void initializeMonthlyData(String searchDate,User user){
+    public void initializeMonthlyData(String searchDate,User user) throws SQLException {
         currentUser = user;
-
+        edtIdFinder = new EdtIdFinder();
         if(currentUser.getRole().equals("Etudiant")){
             currentEdtId = currentUser.getEdtFormationId();
             currentPersonalEdtId=currentUser.getEdtPersonnelId();
@@ -65,7 +71,7 @@ public class MonthlyCalendarViewController implements Initializable, NextPreviou
             currentEdtId = currentUser.getEdtProfId();
             currentPersonalEdtId=currentUser.getEdtPersonnelId();
         }
-        addMonthDaysToView(searchDate,"", currentEdtId, currentPersonalEdtId,"");
+        addMonthDaysToView(searchDate,"","", currentEdtId, currentPersonalEdtId,"");
     }
 
     public String formatDateTimeString(LocalDate date) {
@@ -99,7 +105,7 @@ public class MonthlyCalendarViewController implements Initializable, NextPreviou
                     statement.setInt(4, edtExtraId);
                     statement.setString(5, filtreValue);
                 }
-            }else if (!condition.isEmpty()|| condition!=null) {
+            }else if (!condition.isEmpty()|| condition!=null && edtExtraId != 0) {
                 statement.setString(4, filtreValue);
             }
             // Si nécessaire, ajoutez le paramètre condition ici
@@ -114,9 +120,9 @@ public class MonthlyCalendarViewController implements Initializable, NextPreviou
         return 0;
     }
 
-    public void addMonthDaysToView(String searchDate, String filtreValue, int edtId, int personalEdtId, String condition) {
+    public void addMonthDaysToView(String searchDate, String filtreValue,String searchValue, int edtId, int personalEdtId, String condition) {
         clearMonthlyView();
-        updateCurrentData(searchDate,filtreValue,edtId,personalEdtId,condition);
+        updateCurrentData(searchDate,filtreValue,searchValue,edtId,personalEdtId,condition);
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         LocalDate date = LocalDate.parse(searchDate, formatter);
         LocalDate premierJourMois = date.withDayOfMonth(1);
@@ -152,9 +158,10 @@ public class MonthlyCalendarViewController implements Initializable, NextPreviou
             }
         }
     }
-    public void updateCurrentData(String searchDate,String filreValue,int edtId,int personalEdtId, String filtreCondition){
+    public void updateCurrentData(String searchDate,String filreValue,String searchValue,int edtId,int personalEdtId, String filtreCondition){
         currentSearchDate=searchDate;
         currentFiltreValue=filreValue;
+        currentSearchValue=searchValue;
         currentEdtId=edtId;
         currentPersonalEdtId=personalEdtId;
         currentFiltreCondition=filtreCondition;
@@ -196,8 +203,7 @@ public class MonthlyCalendarViewController implements Initializable, NextPreviou
 
         String datePlusOneMonthString = formatter.format(datePlusOneMonth);
 
-
-        addMonthDaysToView(datePlusOneMonthString,currentFiltreValue,currentEdtId,currentPersonalEdtId,currentFiltreCondition);
+        addMonthDaysToView(datePlusOneMonthString,currentFiltreValue,currentSearchValue,currentEdtId,currentPersonalEdtId,currentFiltreCondition);
 
         return datePlusOneMonthString;
     }
@@ -214,23 +220,41 @@ public class MonthlyCalendarViewController implements Initializable, NextPreviou
 
         String dateMinusOneMonthString = formatter.format(dateMinusOneMonth);
 
-        addMonthDaysToView(dateMinusOneMonthString,currentFiltreValue,currentEdtId,currentPersonalEdtId,currentFiltreCondition);
+        addMonthDaysToView(dateMinusOneMonthString,currentFiltreValue,currentSearchValue,currentEdtId,currentPersonalEdtId,currentFiltreCondition);
 
         return dateMinusOneMonthString;
     }
 
     @Override
     public void onSalleFiltre(String searchDate, String filtreValue, int edtId, int personalEdtId) {
-        addMonthDaysToView(searchDate, filtreValue, edtId, personalEdtId, " AND salle = ?");
+        addMonthDaysToView(searchDate, filtreValue,"", edtId, personalEdtId, " AND salle = ?");
     }
 
     @Override
     public void onTypeFiltre(String searchDate, String filtreValue, int edtId, int personalEdtId) {
-        addMonthDaysToView(searchDate, filtreValue, edtId, personalEdtId, " AND type = ?");
+        addMonthDaysToView(searchDate, filtreValue,"", edtId, personalEdtId, " AND type = ?");
     }
 
     @Override
     public void onMatiereFiltre(String searchDate, String filtreValue, int edtId, int personalEdtId) {
-        addMonthDaysToView(searchDate, filtreValue, edtId, personalEdtId, " AND matiere = ?");
+        addMonthDaysToView(searchDate, filtreValue,"", edtId, personalEdtId, " AND matiere = ?");
+    }
+
+    @Override
+    public void onSpecialitySearch(String searchDate, String searchValue) {
+        int edtId = edtIdFinder.getEdtIdFromSearchValue(searchValue);
+        addMonthDaysToView(searchDate,"",searchValue,edtId,0,"");
+    }
+
+    @Override
+    public void onTeacherSearch(String searchDate, String searchValue) {
+        int edtId = edtIdFinder.getEdtIdFromSearchValue(searchValue);
+        addMonthDaysToView(searchDate,"",searchValue,edtId,0,"");
+    }
+
+    @Override
+    public void onClassSearch(String searchDate, String searchValue) {
+        int edtId = edtIdFinder.getEdtIdFromSearchValue(searchValue);
+        addMonthDaysToView(searchDate,"",searchValue,edtId,0,"");
     }
 }

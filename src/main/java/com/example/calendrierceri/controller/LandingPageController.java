@@ -4,6 +4,7 @@ import com.example.calendrierceri.model.User;
 import com.example.calendrierceri.util.FilterPopulator;
 import com.example.calendrierceri.util.FiltreService;
 import com.example.calendrierceri.util.NextPreviousService;
+import com.example.calendrierceri.util.SearchService;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
@@ -13,10 +14,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Parent;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.MenuButton;
-import javafx.scene.control.MenuItem;
+import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 
 import java.io.IOException;
@@ -58,6 +56,15 @@ public class LandingPageController  implements Initializable  {
     @FXML
     private MenuButton filtreSalle;
 
+    @FXML
+    private MenuButton searchTypeMenu;
+
+    @FXML
+    private TextField searchTypeInput;
+
+    @FXML
+    private Button searchButton;
+
     private User currentUser;
 
     private String currentDisplayedDate;
@@ -66,7 +73,10 @@ public class LandingPageController  implements Initializable  {
 
     private FiltreService currentFiltreService;
 
+    private SearchService currentSearchService;
+
     private FilterPopulator filterPopulator;
+
 
 
     public void setCurrentUser(User user) throws SQLException {
@@ -100,24 +110,57 @@ public class LandingPageController  implements Initializable  {
     public void initialize(URL url, ResourceBundle rb) {
 
 
+        searchTypeMenu.getItems().clear();
         calendarViewType.getItems().clear();
+
+            MenuItem specialitySearchItem = new MenuItem("Search By Speciality");
+            MenuItem teacherSearchItem = new MenuItem("Search By Teacher");
+            MenuItem classSearchItem = new MenuItem("Search By Class");
 
             MenuItem weeklyMenuItem = new MenuItem("Weekly");
             MenuItem dailyMenuItem = new MenuItem("Daily");
             MenuItem monthlyMenuItem = new MenuItem("Monthly");
 
 
+            searchTypeMenu.getItems().addAll(specialitySearchItem,teacherSearchItem,classSearchItem);
+
             // Ajouter les éléments de menu au MenuButton
             calendarViewType.getItems().addAll(dailyMenuItem, weeklyMenuItem, monthlyMenuItem);
 
             LocalDate today = LocalDate.now();
-
 
             // Formater la date dans le format "yyyy-MM-dd"
             DateTimeFormatter formater = DateTimeFormatter.ofPattern("yyyy-MM-dd");
             currentDisplayedDate = today.format(formater);
 
             updateMonthDisplayed(currentDisplayedDate);
+
+            specialitySearchItem.setOnAction(event ->{
+                searchTypeMenu.setText("Search by Speciality");
+                searchButton.setOnAction(event1 -> {
+                    String searchValue = "edt_formation_"+searchTypeInput.getText().toLowerCase();
+                    labelEdtInfo.setText(searchTypeInput.getText().toUpperCase()+" Speciality Calendar.");
+                    currentSearchService.onSpecialitySearch(currentDisplayedDate,searchValue);
+                });
+            });
+
+            teacherSearchItem.setOnAction(event ->{
+                searchTypeMenu.setText("Search by Teacher");
+                searchButton.setOnAction(event1 -> {
+                    String searchValue = "edt_prof_"+searchTypeInput.getText().replace(" ", "_").toLowerCase();
+                    labelEdtInfo.setText(searchTypeInput.getText().toUpperCase()+" Teacher Calendar.");
+                    currentSearchService.onTeacherSearch(currentDisplayedDate,searchValue);
+                });
+            });
+
+            classSearchItem.setOnAction(event ->{
+                searchTypeMenu.setText("Search by Class");
+                searchButton.setOnAction(event1 -> {
+                    String searchValue ="edt_salle_"+ searchTypeInput.getText().toLowerCase();
+                    labelEdtInfo.setText(searchTypeInput.getText().toUpperCase()+" Class Calendar.");
+                    currentSearchService.onClassSearch(currentDisplayedDate,searchValue);
+                });
+            });
 
             nextDisplayButton.setOnAction(event ->{
                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
@@ -150,15 +193,17 @@ public class LandingPageController  implements Initializable  {
                     weeklyCalendarViewController.initializeWeeklyData(currentDisplayedDate,currentUser);
                     if (calendarViewVBox.getChildren().isEmpty()) {
                         calendarViewVBox.getChildren().add(weeklyView);
-                        //calendarViewVBox.setFillWidth(true);
                     } else {
                         // Remplacer le contenu existant
                         calendarViewVBox.getChildren().set(0, weeklyView);
                     }
                     currentNextPreviousService = weeklyCalendarViewController;
                     currentFiltreService = weeklyCalendarViewController;
+                    currentSearchService = weeklyCalendarViewController;
                 } catch (IOException e) {
                     e.printStackTrace();
+                } catch (SQLException e) {
+                    throw new RuntimeException(e);
                 }
             });
 
@@ -191,8 +236,11 @@ public class LandingPageController  implements Initializable  {
                 }
                 currentNextPreviousService = monthlyCalendarViewController;
                 currentFiltreService = monthlyCalendarViewController;
+                currentSearchService = monthlyCalendarViewController;
             } catch (IOException e) {
                 e.printStackTrace();
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
             }
         });
     }

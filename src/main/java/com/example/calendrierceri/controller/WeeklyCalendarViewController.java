@@ -2,8 +2,10 @@ package com.example.calendrierceri.controller;
 
 import com.example.calendrierceri.model.Event;
 import com.example.calendrierceri.model.User;
+import com.example.calendrierceri.util.EdtIdFinder;
 import com.example.calendrierceri.util.FiltreService;
 import com.example.calendrierceri.util.NextPreviousService;
+import com.example.calendrierceri.util.SearchService;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
@@ -29,7 +31,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
-public class WeeklyCalendarViewController implements Initializable, NextPreviousService, FiltreService {
+public class WeeklyCalendarViewController implements Initializable, NextPreviousService, FiltreService, SearchService {
 
     @FXML
     private GridPane weeklyCalendarView;
@@ -41,6 +43,9 @@ public class WeeklyCalendarViewController implements Initializable, NextPrevious
     private int currentPersonalEdtId;
     private int currentEdtId;
     private String currentFiltreCondition;
+    private String currentSearchValur;
+
+    private EdtIdFinder edtIdFinder;
 
     public void setCurrentUser(User user){
         this.currentUser=user;
@@ -55,7 +60,8 @@ public class WeeklyCalendarViewController implements Initializable, NextPrevious
         }
     }
 
-    public void initializeWeeklyData(String searchData,User user){
+    public void initializeWeeklyData(String searchData,User user) throws SQLException {
+        edtIdFinder = new EdtIdFinder();
         addDayInfoOnDayLabel(searchData);
         currentUser=user;
         if(currentUser.getRole().equals("Etudiant")){
@@ -287,8 +293,9 @@ public class WeeklyCalendarViewController implements Initializable, NextPrevious
         return scrollPane;
     }
 
-    public void updateCurrentData(String searchDate,String filreValue,int edtId,int personalEdtId, String filtreCondition){
+    public void updateCurrentData(String searchDate,String filreValue,String searchValue ,int edtId,int personalEdtId, String filtreCondition){
         currentSearchDate=searchDate;
+        currentSearchValur = searchValue;
         currentFiltreValue=filreValue;
         currentEdtId=edtId;
         currentPersonalEdtId=personalEdtId;
@@ -309,6 +316,14 @@ public class WeeklyCalendarViewController implements Initializable, NextPrevious
         LocalDate datePlusOneWeek = date.plusWeeks(1);
 
         String datePlusOneWeekString = formatter.format(datePlusOneWeek);
+
+        if(!currentSearchValur.isEmpty()){
+            mapWeekInfo(datePlusOneWeekString,currentEdtId,0);
+            addDayInfoOnDayLabel(datePlusOneWeekString);
+            clearGridPane(weeklyCalendarView);
+            addEventsToView(currentWeekEvents);
+            return datePlusOneWeekString;
+        }
 
         if(!currentFiltreCondition.isEmpty()){
             filtrerEvenements(datePlusOneWeekString,currentFiltreValue,currentEdtId,currentPersonalEdtId,currentFiltreCondition);
@@ -338,6 +353,14 @@ public class WeeklyCalendarViewController implements Initializable, NextPrevious
         LocalDate dateMinusOneWeek = date.minusWeeks(1);
 
         String dateMinusOneWeekString = formatter.format(dateMinusOneWeek);
+
+        if(!currentSearchValur.isEmpty()){
+            mapWeekInfo(dateMinusOneWeekString,currentEdtId,0);
+            addDayInfoOnDayLabel(dateMinusOneWeekString);
+            clearGridPane(weeklyCalendarView);
+            addEventsToView(currentWeekEvents);
+            return dateMinusOneWeekString;
+        }
 
         if(!currentFiltreCondition.isEmpty()){
             filtrerEvenements(dateMinusOneWeekString,currentFiltreValue,currentEdtId,currentPersonalEdtId,currentFiltreCondition);
@@ -407,7 +430,7 @@ public class WeeklyCalendarViewController implements Initializable, NextPrevious
         if (!currentWeekEvents.isEmpty())
             currentWeekEvents.clear();
 
-        updateCurrentData(searchDate,filtreValue,edtId,personalEdtId,condition);
+        updateCurrentData(searchDate,filtreValue,"",edtId,personalEdtId,condition);
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         LocalDate date = LocalDate.parse(searchDate, formatter); // Conversion de la chaîne en LocalDate
@@ -428,9 +451,9 @@ public class WeeklyCalendarViewController implements Initializable, NextPrevious
         String requeteSql;
         PreparedStatement statement;
         if (personalEdtId == 0) {
-            requeteSql = "SELECT * FROM events WHERE dtstart BETWEEN ? AND ? AND edt_id = ? AND " + condition;
+            requeteSql = "SELECT * FROM events WHERE dtstart BETWEEN ? AND ? AND edt_id = ? " + condition;
         } else {
-            requeteSql = "SELECT * FROM events WHERE dtstart BETWEEN ? AND ? AND (edt_id = ? OR edt_id = ?) AND " + condition;
+            requeteSql = "SELECT * FROM events WHERE dtstart BETWEEN ? AND ? AND (edt_id = ? OR edt_id = ?) " + condition;
         }
 
         try {
@@ -465,19 +488,46 @@ public class WeeklyCalendarViewController implements Initializable, NextPrevious
         addEventsToView(currentWeekEvents);
     }
 
+
     @Override
     public void onSalleFiltre(String searchDate, String filtreValue, int edtId, int personalEdtId) {
-        filtrerEvenements(searchDate, filtreValue, edtId, personalEdtId, "salle = ?");
+        filtrerEvenements(searchDate, filtreValue, edtId, personalEdtId, " AND salle = ?");
     }
 
     @Override
     public void onTypeFiltre(String searchDate, String filtreValue, int edtId, int personalEdtId) {
-        filtrerEvenements(searchDate, filtreValue, edtId, personalEdtId, "type = ?");
+        filtrerEvenements(searchDate, filtreValue, edtId, personalEdtId, " AND type = ?");
     }
 
     @Override
     public void onMatiereFiltre(String searchDate, String filtreValue, int edtId, int personalEdtId) {
-        filtrerEvenements(searchDate, filtreValue, edtId, personalEdtId, "matiere = ?");
+        filtrerEvenements(searchDate, filtreValue, edtId, personalEdtId, " AND matiere = ?");
     }
 
+    @Override
+    public void onSpecialitySearch(String searchDate, String searchValue) {
+        int edtId = edtIdFinder.getEdtIdFromSearchValue(searchValue);
+        updateCurrentData(searchDate,"",searchValue,edtId,0,"");
+        mapWeekInfo(searchDate,edtId,0);
+        clearGridPane(weeklyCalendarView);
+        addEventsToView(currentWeekEvents);
+    }
+
+    @Override
+    public void onTeacherSearch(String searchDate, String searchValue) {
+        int edtId = edtIdFinder.getEdtIdFromSearchValue(searchValue);
+        updateCurrentData(searchDate,"",searchValue,edtId,0,"");
+        mapWeekInfo(searchDate,edtId,0);
+        clearGridPane(weeklyCalendarView);
+        addEventsToView(currentWeekEvents);
+    }
+
+    @Override
+    public void onClassSearch(String searchDate, String searchValue) {
+        int edtId = edtIdFinder.getEdtIdFromSearchValue(searchValue);
+        updateCurrentData(searchDate,"",searchValue,edtId,0,"");
+        mapWeekInfo(searchDate,edtId,0);
+        clearGridPane(weeklyCalendarView);
+        addEventsToView(currentWeekEvents);
+    }
 }
