@@ -268,5 +268,4 @@ public class WeeklyCalendarViewController implements Initializable {
         return label;
     }
 
-
 }

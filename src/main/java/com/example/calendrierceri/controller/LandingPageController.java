@@ -1,6 +1,7 @@
 package com.example.calendrierceri.controller;
 
 import com.example.calendrierceri.model.User;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -16,6 +17,7 @@ import java.net.URL;
 import java.time.LocalDate;
 import java.util.ResourceBundle;
 import javafx.scene.control.ToggleButton;
+import javafx.stage.WindowEvent;
 
 
 public class LandingPageController implements Initializable {
@@ -35,22 +37,21 @@ public class LandingPageController implements Initializable {
     }
 
     private static final String LIGHT_MODE_STYLE = "-fx-background-color: white; -fx-text-fill: black;";
-    private static final String DARK_MODE_STYLE = "-fx-background-color: #333; -fx-text-fill: white;";
+    private static final String DARK_MODE_STYLE = "-fx-background-color: #4C4C4C; -fx-text-fill: white;";
 
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-            // Initialiser le commutateur de thème
-            themeToggle.setOnAction(event -> {
-                if (themeToggle.isSelected()) {
-                    applyDarkMode();
-                } else {
-                    applyLightMode();
-                }
-            });
+
+        themeToggle.setOnAction(event -> {
+            if (themeToggle.isSelected()) {
+                safelyApplyDarkMode();
+            } else {
+                safelyApplyLightMode();
+            }
+        });
 
             // Appliquer le mode clair par défaut
-            applyLightMode();
             calendarViewType.getItems().clear();
 
             MenuItem weeklyMenuItem = new MenuItem("Weekly");
@@ -97,16 +98,21 @@ public class LandingPageController implements Initializable {
             }
         });
 
-
     }
-    private void applyLightMode() {
-        calendarViewVBox.setStyle(LIGHT_MODE_STYLE);
-        // Appliquer le mode clair à d'autres composants si nécessaire
+    private void safelyApplyLightMode() {
+        Platform.runLater(() -> {
+            if (calendarViewVBox.getScene() != null && calendarViewVBox.getScene().getRoot() != null) {
+                calendarViewVBox.getScene().getRoot().setStyle(LIGHT_MODE_STYLE);
+            }
+        });
     }
 
-    private void applyDarkMode() {
-        calendarViewVBox.setStyle(DARK_MODE_STYLE);
-        // Appliquer le mode sombre à d'autres composants si nécessaire
+    private void safelyApplyDarkMode() {
+        Platform.runLater(() -> {
+            if (calendarViewVBox.getScene() != null && calendarViewVBox.getScene().getRoot() != null) {
+                calendarViewVBox.getScene().getRoot().setStyle(DARK_MODE_STYLE);
+            }
+        });
     }
 
 }
