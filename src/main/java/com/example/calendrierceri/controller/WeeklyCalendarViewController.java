@@ -31,6 +31,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
+import javafx.scene.control.Hyperlink;
+import javafx.scene.layout.VBox;
+
 public class WeeklyCalendarViewController implements Initializable, NextPreviousService, FiltreService, SearchService {
 
     @FXML
@@ -42,8 +45,8 @@ public class WeeklyCalendarViewController implements Initializable, NextPrevious
     private String currentFiltreValue;
     private int currentPersonalEdtId;
     private int currentEdtId;
-    private String currentFiltreCondition;
-    private String currentSearchValur;
+    private String currentFiltreCondition = "";
+    private String currentSearchValur = "";
 
     private EdtIdFinder edtIdFinder;
 
@@ -308,16 +311,11 @@ public class WeeklyCalendarViewController implements Initializable, NextPrevious
     public String onNext(String searchDate) {
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-
-        // Convertir la chaîne en LocalDate
         LocalDate date = LocalDate.parse(searchDate, formatter);
-
-        // Ajouter une semaine à la date
         LocalDate datePlusOneWeek = date.plusWeeks(1);
-
         String datePlusOneWeekString = formatter.format(datePlusOneWeek);
 
-        if(!currentSearchValur.isEmpty()){
+        if(currentSearchValur != null && !currentSearchValur.isEmpty()){
             mapWeekInfo(datePlusOneWeekString,currentEdtId,0);
             addDayInfoOnDayLabel(datePlusOneWeekString);
             clearGridPane(weeklyCalendarView);
@@ -325,7 +323,7 @@ public class WeeklyCalendarViewController implements Initializable, NextPrevious
             return datePlusOneWeekString;
         }
 
-        if(!currentFiltreCondition.isEmpty()){
+        if (currentFiltreCondition != null && !currentFiltreCondition.isEmpty()) {
             filtrerEvenements(datePlusOneWeekString,currentFiltreValue,currentEdtId,currentPersonalEdtId,currentFiltreCondition);
             addDayInfoOnDayLabel(datePlusOneWeekString);
             return datePlusOneWeekString;
@@ -345,16 +343,11 @@ public class WeeklyCalendarViewController implements Initializable, NextPrevious
     @Override
     public String onPrevious(String searchDate) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-
-        // Convertir la chaîne en LocalDate
         LocalDate date = LocalDate.parse(searchDate, formatter);
-
-        // Ajouter une semaine à la date
         LocalDate dateMinusOneWeek = date.minusWeeks(1);
-
         String dateMinusOneWeekString = formatter.format(dateMinusOneWeek);
 
-        if(!currentSearchValur.isEmpty()){
+        if(currentSearchValur != null && !currentSearchValur.isEmpty()){
             mapWeekInfo(dateMinusOneWeekString,currentEdtId,0);
             addDayInfoOnDayLabel(dateMinusOneWeekString);
             clearGridPane(weeklyCalendarView);
@@ -362,7 +355,7 @@ public class WeeklyCalendarViewController implements Initializable, NextPrevious
             return dateMinusOneWeekString;
         }
 
-        if(!currentFiltreCondition.isEmpty()){
+        if (currentFiltreCondition != null && !currentFiltreCondition.isEmpty()) {
             filtrerEvenements(dateMinusOneWeekString,currentFiltreValue,currentEdtId,currentPersonalEdtId,currentFiltreCondition);
             addDayInfoOnDayLabel(dateMinusOneWeekString);
             return dateMinusOneWeekString;
