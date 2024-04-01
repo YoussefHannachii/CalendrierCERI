@@ -21,6 +21,10 @@ import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 import java.awt.Desktop;
+<<<<<<< HEAD
+=======
+
+>>>>>>> 695daa2aab4be4e78ecd8628f08813d5cf007c89
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
