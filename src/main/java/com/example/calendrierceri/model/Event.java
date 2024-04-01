@@ -11,7 +11,9 @@ public class Event {
     private String type;
     private Integer edtId;
 
-    public Event(int eventId, String dtstart, String dtend, String matiere, String enseignant, String td, String salle, String type, Integer edtId) {
+    private String description;
+
+    public Event(int eventId, String dtstart, String dtend, String matiere, String enseignant, String td, String salle, String type, Integer edtId,String description) {
         this.eventId = eventId;
         this.dtstart = dtstart;
         this.dtend = dtend;
@@ -21,6 +23,19 @@ public class Event {
         this.salle = salle;
         this.type = type;
         this.edtId = edtId;
+        this.description = description;
+    }
+
+    public Event(String dtstart, String dtend, String matiere, String enseignant, String td, String salle, String type, Integer edtId, String description) {
+        this.dtstart = dtstart;
+        this.dtend = dtend;
+        this.matiere = matiere;
+        this.enseignant = enseignant;
+        this.td = td;
+        this.salle = salle;
+        this.type = type;
+        this.edtId = edtId;
+        this.description = description;
     }
 
     public Event() {
@@ -98,6 +113,14 @@ public class Event {
         this.edtId = edtId;
     }
 
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
     @Override
     public String toString() {
         return "Event{" +
@@ -109,7 +132,8 @@ public class Event {
                 ", td='" + td + '\'' +
                 ", salle='" + salle + '\'' +
                 ", type='" + type + '\'' +
-                ", edtId=" + edtId +
+                ", edtId=" + edtId + '\''+
+                ", desciption=" + description +
                 '}';
     }
 }

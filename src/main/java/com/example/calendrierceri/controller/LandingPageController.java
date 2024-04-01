@@ -269,6 +269,9 @@ public class LandingPageController  implements Initializable  {
             try {
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/calendrierceri/addPersonnalEventForm.fxml"));
                 Parent addPersonnalEventForm = loader.load();
+                AddPersonnalEventFormController addPersonnalEventFormController = loader.getController();
+
+                addPersonnalEventFormController.setCurrentUser(currentUser);
 
                 // Création de la scène pour la fenêtre modale
                 Scene modalScene = new Scene(addPersonnalEventForm);

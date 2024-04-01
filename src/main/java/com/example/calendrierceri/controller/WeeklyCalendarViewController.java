@@ -194,6 +194,13 @@ public class WeeklyCalendarViewController implements Initializable, NextPrevious
             event.setType("Aucun type spécifié");
         }
         event.setEdtId(resultSet.getInt("edt_id"));
+
+        String description = resultSet.getString("event_description");
+        if (description != null) {
+            event.setDescription(description);
+        } else {
+            event.setDescription("Aucun type spécifié");
+        }
         return event;
     }
 
@@ -283,6 +290,18 @@ public class WeeklyCalendarViewController implements Initializable, NextPrevious
                     "-fx-border-color: red; " +
                     "-fx-padding: 5px;");
         }else if(event.getType().equals("Perso")){
+            Text textEventPersonnal = new Text(
+                    "Type: " + event.getType() + "\n" +
+                    "Desciption: " + event.getDescription());
+            textEventPersonnal.setFont(Font.font("Arial", FontWeight.BOLD, 12));
+            textEventPersonnal.setFill(Color.BLACK);
+            StackPane textEventPersonnalContainer = new StackPane();
+            textEventPersonnalContainer.setStyle("-fx-background-color: #F4FF51; " +
+                    "-fx-padding: 5px;");
+            textEventPersonnalContainer.getChildren().add(textEventPersonnal);
+            scrollPane.setContent(textEventPersonnalContainer);
+            // Autoriser le défilement vertical si nécessaire
+            scrollPane.setFitToHeight(true);
             scrollPane.setStyle("-fx-background-color: #F4FF51; " +
                     "-fx-border-color: black; " +
                     "-fx-padding: 5px;");
