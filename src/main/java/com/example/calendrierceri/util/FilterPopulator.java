@@ -6,9 +6,9 @@ import java.util.List;
 
 public class FilterPopulator {
 
-    String url = "jdbc:mysql://localhost:3306/edt_ceri";
+    String url = "jdbc:mysql://localhost:3306/edt";
     String username = "root";
-    String password = "root";
+    String password = "Smail@10";
     private Connection connection;
 
     public FilterPopulator() throws SQLException {
