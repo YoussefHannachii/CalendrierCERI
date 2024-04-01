@@ -15,8 +15,10 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.net.URL;
@@ -66,6 +68,9 @@ public class LandingPageController  implements Initializable  {
     @FXML
     private Button searchButton;
 
+    @FXML
+    private Button bookRoomButton;
+
     private User currentUser;
 
     private String currentDisplayedDate;
@@ -95,6 +100,13 @@ public class LandingPageController  implements Initializable  {
         }
         labelEdtInfo.setText(currentUser.getPrenom() + " " + currentUser.getNom() +" calendar");
         labelEdtInfo.setStyle("-fx-font-family: Arial; -fx-font-weight: bold; -fx-font-size: 12px");
+
+        // Vérifiez le rôle de l'utilisateur et ajustez l'interface utilisateur en conséquence
+        if ("Professeur".equals(currentUser.getRole())) {
+            bookRoomButton.setVisible(true);
+        } else {
+            bookRoomButton.setVisible(false);
+        }
     }
 
     public void updateMonthDisplayed(String currentDate){
@@ -333,6 +345,35 @@ public class LandingPageController  implements Initializable  {
                 calendarViewVBox.getScene().getRoot().setStyle(DARK_MODE_STYLE);
             }
         });
+    }
+
+
+    public void openBookingForm() {
+        if ("Professeur".equals(currentUser.getRole())) {
+            // Ouvrez le formulaire de réservation
+            try {
+                FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/com/example/calendrierceri/BookingForm.fxml"));
+                Parent bookingForm = fxmlLoader.load();
+                Scene scene = new Scene(bookingForm);
+                Stage stage = new Stage();
+                stage.setTitle("Book a Room");
+                stage.setScene(scene);
+                stage.show();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } else {
+            // Affichez une alerte pour les utilisateurs qui ne sont pas professeurs
+            showAlert("Access Denied", "Booking is only available for Professors.", Alert.AlertType.ERROR);
+        }
+    }
+
+    private void showAlert(String title, String content, Alert.AlertType type) {
+        Alert alert = new Alert(type);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(content);
+        alert.showAndWait();
     }
 
 }

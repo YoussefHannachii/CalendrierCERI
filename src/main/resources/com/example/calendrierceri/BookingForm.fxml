@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+
+<VBox xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="com.example.calendrierceri.controller.BookingFormController" alignment="CENTER" spacing="10" style="-fx-background-color: #FFFFFF;">
+    <padding>
+        <Insets top="20" right="20" bottom="20" left="20" />
+    </padding>
+    <children>
+        <Text text="Book a Room" style="-fx-font-size: 24; -fx-font-weight: bold;" />
+        <DatePicker fx:id="datePicker" prefWidth="300" />
+        <ComboBox fx:id="timeSlotComboBox" promptText="Select Time Slot" prefWidth="300" />
+        <ComboBox fx:id="roomComboBox" promptText="Select Room" prefWidth="300" />
+        <Button text="Book" onAction="#bookRoom" maxWidth="Infinity" style="-fx-font-size: 14;" />
+    </children>
+</VBox>
