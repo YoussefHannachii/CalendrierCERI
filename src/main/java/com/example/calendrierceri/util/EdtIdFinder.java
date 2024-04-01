@@ -5,9 +5,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class EdtIdFinder {
-    String url = "jdbc:mysql://localhost:3306/edt";
+    String url = "jdbc:mysql://localhost:3306/edt_ceri";
     String username = "root";
-    String password = "Smail@10";
+    String password = "root";
     private Connection connection;
 
     public EdtIdFinder() throws SQLException {
