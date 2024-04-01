@@ -9,6 +9,7 @@ import com.example.calendrierceri.util.SearchService;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
+import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.GridPane;
@@ -263,8 +264,16 @@ public class WeeklyCalendarViewController implements Initializable, NextPrevious
     }
 
     public static ScrollPane createLabelFromEvent(Event event) {
+        String[] enseignantParts = event.getEnseignant().split(" ");
+        String nom = enseignantParts.length > 1 ? enseignantParts[1] : "";
+        String prenom = enseignantParts.length > 0 ? enseignantParts[0] : "";
+        String email = nom.toLowerCase() + "." + prenom.toLowerCase() + "@alumni.univ-avignon.fr";
+
+        Hyperlink enseignantLink = new Hyperlink(event.getEnseignant());
+        enseignantLink.setOnAction(e -> openMailTo(email));
+
         Text text = new Text(event.getMatiere() + "\n" +
-                "Enseignant: " + event.getEnseignant() + "\n" +
+                "Enseignant: " + enseignantLink + "\n" +
                 "Salle: " + event.getSalle() + "\n" +
                 "Type: " + event.getType() + "\n" +
                 "Promotions: " + event.getTd());
