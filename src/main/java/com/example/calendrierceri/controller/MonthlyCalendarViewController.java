@@ -184,9 +184,9 @@ public class MonthlyCalendarViewController implements Initializable, NextPreviou
 
     public static Connection getDbConnection() throws SQLException {
         // Remplacez les valeurs par celles de votre base de données
-        String url = "jdbc:mysql://localhost:3306/edt_ceri";
+        String url = "jdbc:mysql://localhost:3306/edt";
         String username = "root";
-        String password = "root";
+        String password = "Smail@10";
 
         return DriverManager.getConnection(url, username, password);
     }
