@@ -11,10 +11,13 @@ import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 
@@ -65,6 +68,9 @@ public class LandingPageController  implements Initializable  {
 
     @FXML
     private Button searchButton;
+
+    @FXML
+    private Button addPersonalEvent;
 
     private User currentUser;
 
@@ -258,6 +264,30 @@ public class LandingPageController  implements Initializable  {
                 throw new RuntimeException(e);
             }
         });
+
+        addPersonalEvent.setOnAction(event -> {
+            try {
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/calendrierceri/addPersonnalEventForm.fxml"));
+                Parent addPersonnalEventForm = loader.load();
+                AddPersonnalEventFormController addPersonnalEventFormController = loader.getController();
+
+                addPersonnalEventFormController.setCurrentUser(currentUser);
+
+                // Création de la scène pour la fenêtre modale
+                Scene modalScene = new Scene(addPersonnalEventForm);
+
+                // Création d'une nouvelle fenêtre modale
+                Stage addPersonnalEventFormPopUpStage = new Stage();
+                addPersonnalEventFormPopUpStage.setTitle("Add Personnal Event Form Pop Up");
+                addPersonnalEventFormPopUpStage.initModality(Modality.APPLICATION_MODAL);
+                addPersonnalEventFormPopUpStage.setScene(modalScene);
+
+                addPersonnalEventFormPopUpStage.show();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        });
+
     }
 
     //Fix pour la recherche aprés il faut penser a mettre type de recherche pour faire les recherche suivants l'edt diplayed

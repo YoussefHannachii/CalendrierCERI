@@ -20,8 +20,8 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
-import java.awt.Desktop;
 
+import java.awt.Desktop;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -199,6 +199,13 @@ public class WeeklyCalendarViewController implements Initializable, NextPrevious
             event.setType("Aucun type spécifié");
         }
         event.setEdtId(resultSet.getInt("edt_id"));
+
+        String description = resultSet.getString("event_description");
+        if (description != null) {
+            event.setDescription(description);
+        } else {
+            event.setDescription("Aucun type spécifié");
+        }
         return event;
     }
 

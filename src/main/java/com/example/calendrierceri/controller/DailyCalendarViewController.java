@@ -149,6 +149,17 @@ public class DailyCalendarViewController implements Initializable, FiltreService
         label.setMaxWidth(Double.MAX_VALUE);
         if ("Evaluation".equals(event.getType())) {
             label.setStyle("-fx-background-color: red; -fx-border-color: red; -fx-padding: 5px;");
+        } else if ("Perso".equals(event.getType())) {
+            String textEventPersonnal =
+                    "Type: " + event.getType() + "\n" +
+                    "Description: " + event.getDescription();
+            label.setText(textEventPersonnal);
+
+            label.setFont(Font.font("Arial", FontWeight.BOLD, 12));
+            label.setTextFill(Color.BLACK);
+            label.setWrapText(true);
+            label.setMaxWidth(Double.MAX_VALUE);
+            label.setStyle("-fx-background-color: #F4FF51; -fx-border-color: black;  -fx-padding: 5px;");
         } else {
             label.setStyle("-fx-background-color: #B0E0E6; -fx-border-color: #4682B4; -fx-padding: 5px;");
         }
