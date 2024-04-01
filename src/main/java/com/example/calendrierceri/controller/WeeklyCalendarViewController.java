@@ -268,7 +268,6 @@ public class WeeklyCalendarViewController implements Initializable, NextPrevious
     }
 
     public static ScrollPane createLabelFromEvent(Event event) {
-        // Extraction du nom et du prénom de l'enseignant pour le mail
         String[] enseignantParts = event.getEnseignant().split(" ");
         String nom = enseignantParts.length > 1 ? enseignantParts[1] : "";
         String prenom = enseignantParts.length > 0 ? enseignantParts[0] : "";
@@ -277,30 +276,57 @@ public class WeeklyCalendarViewController implements Initializable, NextPrevious
         Hyperlink enseignantLink = new Hyperlink(event.getEnseignant());
         enseignantLink.setOnAction(e -> openMailTo(email));
 
-        // Création du contenu de l'événement avec le lien
-        VBox content = new VBox(
-                new Text(event.getMatiere() + "\n"),
-                enseignantLink,
-                new Text("\nSalle: " + event.getSalle() + "\n" + "Type: " + event.getType() + "\n" + "Promotions: " + event.getTd())
-        );
-        content.setSpacing(5); // Espacement entre les éléments
+        Text text = new Text(event.getMatiere() + "\n" +
+                "Enseignant: " + enseignantLink + "\n" +
+                "Salle: " + event.getSalle() + "\n" +
+                "Type: " + event.getType() + "\n" +
+                "Promotions: " + event.getTd());
 
-        // Appliquer un style spécifique en fonction du type d'événement
-        String backgroundColor = "#B0E0E6"; // Couleur par défaut pour les séances normales (bleu clair)
-        if ("Evaluation".equals(event.getType())) {
-            backgroundColor = "#FF5B5B"; // Rouge pour les évaluations
-        }
+        // Appliquer un style au Text
+        text.setFont(Font.font("Arial", FontWeight.BOLD, 12));
+        text.setFill(Color.BLACK);
+        StackPane textContainer = new StackPane();
+        textContainer.setStyle("-fx-background-color: #B0E0E6; " +
+                "-fx-padding: 5px;");
+        textContainer.getChildren().add(text);
 
-        // Appliquer les styles
-        content.setStyle("-fx-background-color: " + backgroundColor + "; -fx-padding: 5px;");
-
-        // Emballage du contenu dans un ScrollPane
+        // Créer un ScrollPane pour contenir le Text
         ScrollPane scrollPane = new ScrollPane();
-        scrollPane.setContent(content);
-        scrollPane.setFitToWidth(true); // Pour s'assurer que le contenu s'adapte à la largeur
+        scrollPane.setContent(textContainer);
+
+        // Autoriser le défilement vertical si nécessaire
+        scrollPane.setFitToHeight(true);
+
+        // Appliquer un style au ScrollPane
+        if (event.getType().equals("Evaluation")) {
+            scrollPane.setStyle("-fx-background-color: #FF5B5B; " +
+                    "-fx-border-color: red; " +
+                    "-fx-padding: 5px;");
+        }else if(event.getType().equals("Perso")){
+            Text textEventPersonnal = new Text(
+                    "Type: " + event.getType() + "\n" +
+                            "Desciption: " + event.getDescription());
+            textEventPersonnal.setFont(Font.font("Arial", FontWeight.BOLD, 12));
+            textEventPersonnal.setFill(Color.BLACK);
+            StackPane textEventPersonnalContainer = new StackPane();
+            textEventPersonnalContainer.setStyle("-fx-background-color: #F4FF51; " +
+                    "-fx-padding: 5px;");
+            textEventPersonnalContainer.getChildren().add(textEventPersonnal);
+            scrollPane.setContent(textEventPersonnalContainer);
+            // Autoriser le défilement vertical si nécessaire
+            scrollPane.setFitToHeight(true);
+            scrollPane.setStyle("-fx-background-color: #F4FF51; " +
+                    "-fx-border-color: black; " +
+                    "-fx-padding: 5px;");
+        } else {
+            scrollPane.setStyle("-fx-background-color: #B0E0E6; " +
+                    "-fx-border-color: #4682B4; " +
+                    "-fx-padding: 5px;");
+        }
 
         return scrollPane;
     }
+
 
     // Méthode pour ouvrir le client de messagerie
     private static void openMailTo(String email) {
