@@ -13,6 +13,7 @@ import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -276,29 +277,31 @@ public class WeeklyCalendarViewController implements Initializable, NextPrevious
         Hyperlink enseignantLink = new Hyperlink(event.getEnseignant());
         enseignantLink.setOnAction(e -> openMailTo(email));
 
+        Text enseignantLabel = new Text("Enseignant: ");
+        enseignantLabel.setFont(Font.font("Arial", FontWeight.BOLD, 12));
+        enseignantLabel.setFill(Color.BLACK);
+        HBox enseignantBox = new HBox(enseignantLabel, enseignantLink);
+
         Text text = new Text(event.getMatiere() + "\n" +
-                "Enseignant: " + enseignantLink + "\n" +
                 "Salle: " + event.getSalle() + "\n" +
                 "Type: " + event.getType() + "\n" +
                 "Promotions: " + event.getTd());
 
-        // Appliquer un style au Text
         text.setFont(Font.font("Arial", FontWeight.BOLD, 12));
         text.setFill(Color.BLACK);
-        StackPane textContainer = new StackPane();
-        textContainer.setStyle("-fx-background-color: #B0E0E6; " +
+
+        VBox container = new VBox(); // Conteneur principal
+        container.setStyle("-fx-background-color: #B0E0E6; " +
                 "-fx-padding: 5px;");
-        textContainer.getChildren().add(text);
+        container.getChildren().addAll(text,enseignantBox);
 
-        // Créer un ScrollPane pour contenir le Text
         ScrollPane scrollPane = new ScrollPane();
-        scrollPane.setContent(textContainer);
-
-        // Autoriser le défilement vertical si nécessaire
+        scrollPane.setContent(container);
         scrollPane.setFitToHeight(true);
 
         // Appliquer un style au ScrollPane
         if (event.getType().equals("Evaluation")) {
+            container.setStyle("-fx-background-color: #FF5B5B; ");
             scrollPane.setStyle("-fx-background-color: #FF5B5B; " +
                     "-fx-border-color: red; " +
                     "-fx-padding: 5px;");
