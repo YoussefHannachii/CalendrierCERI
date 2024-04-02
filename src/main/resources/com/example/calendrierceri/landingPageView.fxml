@@ -114,7 +114,7 @@
                         <Insets bottom="20.0" />
                      </VBox.margin>
                   </Button>
-                  <Button mnemonicParsing="false" text="Button" />
+                  <Button fx:id="bookRoomButton" mnemonicParsing="false" text="Book Class" />
                </children>
                <HBox.margin>
                   <Insets />

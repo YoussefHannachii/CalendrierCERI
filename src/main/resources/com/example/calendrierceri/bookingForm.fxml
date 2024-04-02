@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Text?>
+
+<VBox alignment="CENTER" prefHeight="292.0" prefWidth="340.0" spacing="10" style="-fx-background-color: #FFFFFF;" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.calendrierceri.controller.BookingFormController">
+    <padding>
+        <Insets bottom="20" left="20" right="20" top="20" />
+    </padding>
+    <children>
+        <Text style="-fx-font-size: 24; -fx-font-weight: bold;" text="Book a Room" />
+        <DatePicker fx:id="datePicker" prefWidth="300" />
+        <ComboBox fx:id="timeSlotComboBox" prefWidth="300" promptText="Select Time Slot" />
+      <TextField fx:id="subjectText" promptText="Subject" />
+        <ComboBox fx:id="roomComboBox" prefWidth="300" promptText="Select Room" />
+      <TextField fx:id="promotionText" promptText="Promotions (classes)" />
+      <ComboBox fx:id="classReservationType" prefHeight="26.0" prefWidth="297.0" promptText="Choose Class Type" />
+        <Button maxWidth="Infinity" onAction="#bookRoom" style="-fx-font-size: 14;" text="Book" />
+    </children>
+</VBox>
