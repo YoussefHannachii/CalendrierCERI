@@ -3,6 +3,15 @@ package com.example.calendrierceri.model;
 import java.io.Serializable;
 
 public class User implements Serializable {
+
+    public String getUserPreferenceTheme() {
+        return userPreferenceTheme;
+    }
+
+    public void setUserPreferenceTheme(String userPreferenceTheme) {
+        this.userPreferenceTheme = userPreferenceTheme;
+    }
+
     public int getUserId() {
         return userId;
     }
@@ -75,5 +84,6 @@ public class User implements Serializable {
     private int edtFormationId;
     private int edtPersonnelId;
     private int edtProfId;
+    private String userPreferenceTheme;
 
 }

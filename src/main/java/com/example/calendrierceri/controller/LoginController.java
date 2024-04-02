@@ -75,6 +75,8 @@ public class LoginController {
 
         stage.setScene(scene);
         stage.show();
+
+        landingPageController.initializeUserThemePreference(user);
     }
 
     private void showError(String errorMessage) {

@@ -29,6 +29,7 @@ public class UserDAO implements Serializable {
                     user.setMotDePasse(rs.getString("mot_de_passe"));
                     user.setRole(mapRoleName(rs.getInt("role_id")));
                     user.setEdtPersonnelId(rs.getInt("edt_personnel_id"));
+                    user.setUserPreferenceTheme(rs.getString("user_theme_preference"));
 
                     int edtFormationId = rs.getInt("edt_formation_id");
                     if (!rs.wasNull()) {
@@ -55,4 +56,12 @@ public class UserDAO implements Serializable {
         return null;
     }
 
+    public void updateUserThemePreference(int userId, String themePreference) throws SQLException {
+        String sql = "UPDATE users SET user_theme_preference = ? WHERE user_id = ?";
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setString(1, themePreference);
+            statement.setInt(2, userId);
+            statement.executeUpdate();
+        }
+    }
 }

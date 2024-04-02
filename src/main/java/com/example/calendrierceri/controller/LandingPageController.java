@@ -1,5 +1,6 @@
 package com.example.calendrierceri.controller;
 
+import com.example.calendrierceri.dao.UserDAO;
 import com.example.calendrierceri.model.User;
 import com.example.calendrierceri.util.FilterPopulator;
 import com.example.calendrierceri.util.FiltreService;
@@ -23,6 +24,7 @@ import javafx.scene.layout.VBox;
 
 import java.io.IOException;
 import java.net.URL;
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -31,6 +33,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
+
+import static com.example.calendrierceri.controller.WeeklyCalendarViewController.getDbConnection;
+
 
 public class LandingPageController  implements Initializable  {
     @FXML
@@ -87,9 +92,22 @@ public class LandingPageController  implements Initializable  {
     @FXML
     private ToggleButton themeToggle;
 
-    private static final String LIGHT_MODE_STYLE = "-fx-background-color: white; -fx-text-fill: black;";
-    private static final String DARK_MODE_STYLE = "-fx-background-color: #4C4C4C; -fx-text-fill: white;";
 
+
+
+    public void initializeUserThemePreference(User user){
+        Scene scene = themeToggle.getScene();
+        if(user.getUserPreferenceTheme().equals("dark")){
+            themeToggle.setText("Dark mode");
+            scene.getStylesheets().clear();
+            scene.getStylesheets().add(getClass().getResource("/com/example/calendrierceri/dark-theme.css").toExternalForm());
+        }
+        else {
+            themeToggle.setText("Light mode");
+            scene.getStylesheets().clear();
+            scene.getStylesheets().add(getClass().getResource("/com/example/calendrierceri/light-theme.css").toExternalForm());
+        }
+    }
 
 
     public void setCurrentUser(User user) throws SQLException {
@@ -121,14 +139,6 @@ public class LandingPageController  implements Initializable  {
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-
-        themeToggle.setOnAction(event -> {
-            if (themeToggle.isSelected()) {
-                safelyApplyDarkMode();
-            } else {
-                safelyApplyLightMode();
-            }
-        });
 
         searchTypeMenu.getItems().clear();
         calendarViewType.getItems().clear();
@@ -288,6 +298,31 @@ public class LandingPageController  implements Initializable  {
             }
         });
 
+        themeToggle.setOnAction(event -> {
+            Scene scene = themeToggle.getScene();
+            String themePreference;
+            if(themeToggle.isSelected()) {
+                themeToggle.setText("Dark mode");
+                scene.getStylesheets().clear();
+                scene.getStylesheets().add(getClass().getResource("/com/example/calendrierceri/dark-theme.css").toExternalForm());
+                themePreference = "dark";
+            } else {
+                themeToggle.setText("Light mode");
+                scene.getStylesheets().clear();
+                scene.getStylesheets().add(getClass().getResource("/com/example/calendrierceri/light-theme.css").toExternalForm());
+                themePreference = "light";
+            }
+
+            try {
+                Connection connection = getDbConnection();
+                UserDAO userDAO = new UserDAO(connection);
+                userDAO.updateUserThemePreference(currentUser.getUserId(), themePreference);
+                currentUser.setUserPreferenceTheme(themePreference);
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        });
+
     }
 
     //Fix pour la recherche aprés il faut penser a mettre type de recherche pour faire les recherche suivants l'edt diplayed
@@ -346,23 +381,6 @@ public class LandingPageController  implements Initializable  {
             filtreType.getItems().add(typeItem);
         }
 
-    }
-
-
-    private void safelyApplyLightMode() {
-        Platform.runLater(() -> {
-            if (calendarViewVBox.getScene() != null && calendarViewVBox.getScene().getRoot() != null) {
-                calendarViewVBox.getScene().getRoot().setStyle(LIGHT_MODE_STYLE);
-            }
-        });
-    }
-
-    private void safelyApplyDarkMode() {
-        Platform.runLater(() -> {
-            if (calendarViewVBox.getScene() != null && calendarViewVBox.getScene().getRoot() != null) {
-                calendarViewVBox.getScene().getRoot().setStyle(DARK_MODE_STYLE);
-            }
-        });
     }
 
 }
