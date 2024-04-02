@@ -1,10 +1,13 @@
 package com.example.calendrierceri.controller;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.ListView;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -137,22 +140,23 @@ public class BookingFormController {
         LocalTime startTime = LocalTime.parse(times[0], dtf);
         LocalTime endTime = LocalTime.parse(times[1], dtf);
 
-        String insertQuery = "INSERT INTO events (dtstart, dtend, matiere, enseignant, salle, type, td, edt_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)"; // Notez l'ajout de 'type' et 'td'
+        String insertQuery = "INSERT INTO events (dtstart, dtend, matiere, enseignant, salle, type, td, edt_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
         try (Connection conn = connect();
              PreparedStatement pstmt = conn.prepareStatement(insertQuery)) {
 
             pstmt.setString(1, date.atTime(startTime).toString());
             pstmt.setString(2, date.atTime(endTime).toString());
-            pstmt.setString(3, "Anglais"); // Ces valeurs devraient être dynamiques selon votre cas d'utilisation
+            pstmt.setString(3, "Anglais");
             pstmt.setString(4, "Carole Rey");
             pstmt.setString(5, room);
-            pstmt.setString(6, "TD"); // Ajoutez 'type'
-            pstmt.setString(7, "M1-ILSEN-cla-GR1"); // Ajoutez 'td'
-            pstmt.setInt(8, edtId); // Assurez-vous que cette valeur est correctement définie
+            pstmt.setString(6, "TD");
+            pstmt.setString(7, "M1-ILSEN-cla-GR1");
+            pstmt.setInt(8, edtId);
 
             int affectedRows = pstmt.executeUpdate();
             if (affectedRows > 0) {
                 showAlert("Booking Success", "The room has been successfully booked.", AlertType.INFORMATION);
+                loadCalendarEvents();
             } else {
                 showAlert("Booking Error", "An error occurred during booking.", AlertType.ERROR);
             }
@@ -160,4 +164,31 @@ public class BookingFormController {
             e.printStackTrace();
         }
     }
+
+    @FXML
+    ListView<String> calendarListView; // Supposons que vous ayez une ListView pour afficher les événements
+
+    private void loadCalendarEvents() {
+        ObservableList<String> calendarEvents = FXCollections.observableArrayList();
+        String query = "SELECT * FROM events WHERE dtstart >= ? AND dtend <= ?";
+        try (Connection conn = connect();
+             PreparedStatement pstmt = conn.prepareStatement(query)) {
+
+            // Assurez-vous de remplacer ces valeurs par celles pertinentes à votre cas d'utilisation
+            pstmt.setString(1, LocalDate.now().toString());
+            pstmt.setString(2, LocalDate.now().plusWeeks(1).toString());
+
+            ResultSet rs = pstmt.executeQuery();
+            while (rs.next()) {
+                // Formattez les informations de l'événement comme vous le souhaitez
+                String eventInfo = String.format("%s - %s (%s)",
+                        rs.getString("dtstart"), rs.getString("dtend"), rs.getString("matiere"));
+                calendarEvents.add(eventInfo);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        calendarListView.setItems(calendarEvents); // Mettez à jour la ListView avec les nouveaux événements
+    }
+
 }
