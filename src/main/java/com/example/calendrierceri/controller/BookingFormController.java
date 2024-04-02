@@ -48,7 +48,7 @@ public class BookingFormController {
     }
 
     private void populateRooms() {
-        roomComboBox.getItems().addAll("Stat1", "Stat6");
+        roomComboBox.getItems().addAll("Stat 1 = Info - C 137", "Stat 6 = Info - C 129");
     }
 
     @FXML
@@ -99,15 +99,15 @@ public class BookingFormController {
         LocalTime startTime = LocalTime.parse(times[0], dtf);
         LocalTime endTime = LocalTime.parse(times[1], dtf);
 
-        String insertQuery = "INSERT INTO events (dtstart, dtend, matiere, enseignant, td) VALUES (?, ?, ?, ?, ?)";
+        String insertQuery = "INSERT INTO events (dtstart, dtend, matiere, enseignant, salle) VALUES (?, ?, ?, ?, ?)";
         try (Connection conn = connect();
              PreparedStatement pstmt = conn.prepareStatement(insertQuery)) {
 
             pstmt.setString(1, date.atTime(startTime).toString());
             pstmt.setString(2, date.atTime(endTime).toString());
-            pstmt.setString(3, "Anglais"); // Assuming 'matiere' can be 'Reserved' or similar
-            pstmt.setString(4, "Caarole Reey"); // You might want to get the actual user name
-            pstmt.setString(5, room); // Assuming 'td' stores room number, adjust as necessary
+            pstmt.setString(3, "Anglais");
+            pstmt.setString(4, "Carole Rey");
+            pstmt.setString(5, room);
 
             int affectedRows = pstmt.executeUpdate();
             if (affectedRows > 0) {
