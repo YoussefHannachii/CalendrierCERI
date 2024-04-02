@@ -86,11 +86,6 @@ public class LandingPageController  implements Initializable  {
     @FXML
     private ToggleButton themeToggle;
 
-    private static final String LIGHT_MODE_STYLE = "-fx-background-color: white; -fx-text-fill: black;";
-    private static final String DARK_MODE_STYLE = "-fx-background-color: #4C4C4C; -fx-text-fill: white;";
-
-
-
     public void setCurrentUser(User user) throws SQLException {
         this.currentUser=user;
         if(currentUser.getRole().equals("Etudiant")){
@@ -337,24 +332,6 @@ public class LandingPageController  implements Initializable  {
         }
 
     }
-
-
-    private void safelyApplyLightMode() {
-        Platform.runLater(() -> {
-            if (calendarViewVBox.getScene() != null && calendarViewVBox.getScene().getRoot() != null) {
-                calendarViewVBox.getScene().getRoot().setStyle(LIGHT_MODE_STYLE);
-            }
-        });
-    }
-
-    private void safelyApplyDarkMode() {
-        Platform.runLater(() -> {
-            if (calendarViewVBox.getScene() != null && calendarViewVBox.getScene().getRoot() != null) {
-                calendarViewVBox.getScene().getRoot().setStyle(DARK_MODE_STYLE);
-            }
-        });
-    }
-
 
     public void openBookingForm() {
         if ("Professeur".equals(currentUser.getRole())) {
