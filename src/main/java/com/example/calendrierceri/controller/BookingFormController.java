@@ -73,7 +73,7 @@ public class BookingFormController {
     }
 
     private void populateRooms() {
-        roomComboBox.getItems().addAll("Stat 1 = info - C137", "Stat 6 = info - C129");
+        roomComboBox.getItems().addAll("edt_salle_stat1", "edt_salle_stat6");
     }
 
     private void populateTypes() {
