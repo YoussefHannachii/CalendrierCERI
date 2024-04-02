@@ -48,7 +48,7 @@ public class BookingFormController {
     }
 
     private void populateRooms() {
-        roomComboBox.getItems().addAll("Stat 1 = Info - C 137", "Stat 6 = Info - C 129");
+        roomComboBox.getItems().addAll("edt_salle_stat1", "edt_salle_stat6");
     }
 
     @FXML
@@ -62,11 +62,50 @@ public class BookingFormController {
             return;
         }
 
+        // Nouvelle étape : récupérer l'edt_id basé sur la salle (vous devez implémenter la logique correspondante)
+        Integer edtId = getEdtIdFromRoom(room);
+        if (edtId == null) {
+            showAlert("Internal Error", "Could not determine the timetable for the selected room.", AlertType.ERROR);
+            return;
+        }
+
         if (checkAvailability(date, timeSlot, room)) {
-            insertBooking(date, timeSlot, room);
+            insertBooking(date, timeSlot, room, edtId); // Notez l'ajout de edtId comme argument
         } else {
             showAlert("Booking Unavailable", "Selected room and time slot is not available.", AlertType.INFORMATION);
         }
+    }
+
+    // Cette méthode est hypothétique. Vous devez implémenter la logique pour récupérer l'edt_id basé sur la salle
+    private Integer getEdtIdFromRoom(String room) {
+        System.out.println("Recherche de l'edt_id pour la salle: " + room); // Log pour débogage
+        String query = "SELECT id FROM edt WHERE nom = ?"; // Correction ici
+        try (Connection conn = connect();
+             PreparedStatement pstmt = conn.prepareStatement(query)) {
+
+            pstmt.setString(1, room);
+            ResultSet rs = pstmt.executeQuery();
+            if (rs.next()) {
+                Integer edtId = rs.getInt("id");
+                System.out.println("edt_id trouvé: " + edtId); // Log pour débogage
+                return edtId;
+            } else {
+                System.out.println("Aucun edt_id trouvé pour la salle: " + room); // Log d'erreur
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null; // Si l'edt_id n'est pas trouvé, retourner null
+    }
+
+
+
+    private void showAlert(String title, String content, AlertType type) {
+        Alert alert = new Alert(type);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(content);
+        alert.showAndWait();
     }
 
     private boolean checkAvailability(LocalDate date, String timeSlot, String room) {
@@ -92,22 +131,24 @@ public class BookingFormController {
         }
         return false;
     }
-
-    private void insertBooking(LocalDate date, String timeSlot, String room) {
+    private void insertBooking(LocalDate date, String timeSlot, String room, Integer edtId) {
         String[] times = timeSlot.split("-");
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("HH:mm");
         LocalTime startTime = LocalTime.parse(times[0], dtf);
         LocalTime endTime = LocalTime.parse(times[1], dtf);
 
-        String insertQuery = "INSERT INTO events (dtstart, dtend, matiere, enseignant, salle) VALUES (?, ?, ?, ?, ?)";
+        String insertQuery = "INSERT INTO events (dtstart, dtend, matiere, enseignant, salle, type, td, edt_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)"; // Notez l'ajout de 'type' et 'td'
         try (Connection conn = connect();
              PreparedStatement pstmt = conn.prepareStatement(insertQuery)) {
 
             pstmt.setString(1, date.atTime(startTime).toString());
             pstmt.setString(2, date.atTime(endTime).toString());
-            pstmt.setString(3, "Anglais");
+            pstmt.setString(3, "Anglais"); // Ces valeurs devraient être dynamiques selon votre cas d'utilisation
             pstmt.setString(4, "Carole Rey");
             pstmt.setString(5, room);
+            pstmt.setString(6, "TD"); // Ajoutez 'type'
+            pstmt.setString(7, "M1-ILSEN-cla-GR1"); // Ajoutez 'td'
+            pstmt.setInt(8, edtId); // Assurez-vous que cette valeur est correctement définie
 
             int affectedRows = pstmt.executeUpdate();
             if (affectedRows > 0) {
@@ -118,13 +159,5 @@ public class BookingFormController {
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
-
-    private void showAlert(String title, String content, AlertType type) {
-        Alert alert = new Alert(type);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(content);
-        alert.showAndWait();
     }
 }

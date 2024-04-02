@@ -29,7 +29,6 @@ public class UserDAO implements Serializable {
                     user.setMotDePasse(rs.getString("mot_de_passe"));
                     user.setRole(mapRoleName(rs.getInt("role_id")));
                     user.setEdtPersonnelId(rs.getInt("edt_personnel_id"));
-
                     int edtFormationId = rs.getInt("edt_formation_id");
                     if (!rs.wasNull()) {
                         user.setEdtFormationId(edtFormationId);
@@ -39,6 +38,9 @@ public class UserDAO implements Serializable {
                     if (!rs.wasNull()) {
                         user.setEdtProfId(edtProfId);
                     }
+
+                    user.setThemePreference(rs.getString("preference"));
+
                     return user;
                 }
             }
