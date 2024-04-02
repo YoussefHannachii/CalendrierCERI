@@ -1,0 +1,18 @@
+.root {
+    -fx-background-color: white;
+    -fx-text-fill: black;
+}
+
+.label, .menu-button .label, .menu-item .label {
+    -fx-text-fill: black;
+}
+
+.button, .menu-button {
+    -fx-background-color: #e7e7e7;
+    -fx-text-fill: black;
+}
+
+.menu-item {
+    -fx-background-color: white;
+    -fx-text-fill: black;
+}

@@ -3,6 +3,16 @@ package com.example.calendrierceri.model;
 import java.io.Serializable;
 
 public class User implements Serializable {
+
+    public String getPreference() {
+        return preference;
+    }
+
+    public void setPreference(String preference) {
+        this.preference = preference;
+    }
+
+    private String preference;
     public int getUserId() {
         return userId;
     }

@@ -128,11 +128,19 @@ public class LandingPageController  implements Initializable  {
     @Override
     public void initialize(URL url, ResourceBundle rb) {
 
-        themeToggle.setOnAction(event -> {
-            if (themeToggle.isSelected()) {
-                safelyApplyDarkMode();
-            } else {
-                safelyApplyLightMode();
+        themeToggle.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                Scene scene = themeToggle.getScene();
+                if(themeToggle.isSelected()) {
+                    themeToggle.setText("Dark mode");
+                    scene.getStylesheets().clear();
+                    scene.getStylesheets().add(getClass().getResource("/com/example/calendrierceri/dark-theme.css").toExternalForm());
+                } else {
+                    themeToggle.setText("Light mode");
+                    scene.getStylesheets().clear();
+                    scene.getStylesheets().add(getClass().getResource("/com/example/calendrierceri/light-theme.css").toExternalForm());
+                }
             }
         });
 
