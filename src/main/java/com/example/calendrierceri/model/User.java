@@ -77,6 +77,13 @@ public class User implements Serializable {
         this.edtProfId = edtProfId;
     }
 
+    public String getThemePreference() {
+        return themePreference;
+    }
+
+    public void setThemePreference(String themePreference) {
+        this.themePreference = themePreference;
+    }
     private int userId;
     private String nom;
     private String prenom;
@@ -85,5 +92,7 @@ public class User implements Serializable {
     private int edtFormationId;
     private int edtPersonnelId;
     private int edtProfId;
+
+    private String themePreference;
 
 }

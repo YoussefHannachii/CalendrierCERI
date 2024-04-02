@@ -1,5 +1,6 @@
 package com.example.calendrierceri.controller;
 
+import com.example.calendrierceri.dao.UserDAO;
 import com.example.calendrierceri.model.User;
 import com.example.calendrierceri.util.FilterPopulator;
 import com.example.calendrierceri.util.FiltreService;
@@ -22,6 +23,7 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.net.URL;
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -30,6 +32,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
+
+import static com.example.calendrierceri.controller.WeeklyCalendarViewController.getDbConnection;
 
 public class LandingPageController  implements Initializable  {
     @FXML
@@ -123,21 +127,31 @@ public class LandingPageController  implements Initializable  {
     @Override
     public void initialize(URL url, ResourceBundle rb) {
 
-        themeToggle.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                Scene scene = themeToggle.getScene();
-                if(themeToggle.isSelected()) {
-                    themeToggle.setText("Dark mode");
-                    scene.getStylesheets().clear();
-                    scene.getStylesheets().add(getClass().getResource("/com/example/calendrierceri/dark-theme.css").toExternalForm());
-                } else {
-                    themeToggle.setText("Light mode");
-                    scene.getStylesheets().clear();
-                    scene.getStylesheets().add(getClass().getResource("/com/example/calendrierceri/light-theme.css").toExternalForm());
-                }
+        themeToggle.setOnAction(event -> {
+            Scene scene = themeToggle.getScene();
+            String themePreference;
+            if(themeToggle.isSelected()) {
+                themeToggle.setText("Dark mode");
+                scene.getStylesheets().clear();
+                scene.getStylesheets().add(getClass().getResource("/com/example/calendrierceri/dark-theme.css").toExternalForm());
+                themePreference = "dark";
+            } else {
+                themeToggle.setText("Light mode");
+                scene.getStylesheets().clear();
+                scene.getStylesheets().add(getClass().getResource("/com/example/calendrierceri/light-theme.css").toExternalForm());
+                themePreference = "light";
+            }
+
+            try {
+                Connection connection = getDbConnection();
+                UserDAO userDAO = new UserDAO(connection);
+                userDAO.updateUserThemePreference(currentUser.getUserId(), themePreference);
+                currentUser.setThemePreference(themePreference); // Mise à jour de l'objet utilisateur en mémoire
+            } catch (SQLException e) {
+                e.printStackTrace();
             }
         });
+
 
         searchTypeMenu.getItems().clear();
         calendarViewType.getItems().clear();

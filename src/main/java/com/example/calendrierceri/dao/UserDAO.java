@@ -55,14 +55,14 @@ public class UserDAO implements Serializable {
         return null;
     }
 
-    public void updateUserPreference(int userId, String preference) throws SQLException {
-        // Assuming you have a prepared statement and connection set up...
+    public void updateUserThemePreference(int userId, String themePreference) throws SQLException {
         String sql = "UPDATE users SET preference = ? WHERE user_id = ?";
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
-            statement.setString(1, preference);
+            statement.setString(1, themePreference);
             statement.setInt(2, userId);
             statement.executeUpdate();
         }
     }
+
 
 }
